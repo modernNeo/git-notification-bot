@@ -1,0 +1,290 @@
+{
+    "headers": {
+        "Content-Length": "6184",
+        "Content-Type": "application/json",
+        "Host": "git-slack-pr-bot.modernneo.com",
+        "User-Agent": "Bitbucket-Webhooks/2.0",
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, br",
+        "Cdn-Loop": "cloudflare; loops=1",
+        "Cf-Connecting-Ip": "2401:1d80:3224:5:ba54:99d2:b59a:c9ab",
+        "Cf-Ipcountry": "US",
+        "Cf-Ray": "9b6c5d7caefefef0-PDX",
+        "Cf-Visitor": "{\"scheme\":\"https\"}",
+        "Cf-Warp-Tag-Id": "4fc93c42-0215-4086-8580-da2329220b20",
+        "Connection": "keep-alive",
+        "Traceparent": "00-695580ef1e1e977bad9042c8531fc964-6bcf7c5028d75eae-00",
+        "X-Attempt-Number": "1",
+        "X-B3-Parentspanid": "ad9042c8531fc964",
+        "X-B3-Sampled": "0",
+        "X-B3-Spanid": "6bcf7c5028d75eae",
+        "X-B3-Traceid": "695580ef1e1e977bad9042c8531fc964",
+        "X-Event-Key": "pullrequest:created",
+        "X-Event-Time": "Wed, 31 Dec 2025 20:00:47 GMT",
+        "X-Forwarded-For": "2401:1d80:3224:5:ba54:99d2:b59a:c9ab",
+        "X-Forwarded-Proto": "https",
+        "X-Hook-Uuid": "d03da7b3-8549-401f-ae9b-343ffaca4fbb",
+        "X-Hub-Signature": "sha256=9d937eb273bf5123f77c470f3ffae92974c8c62d130b4552da9c52ea342a248f",
+        "X-Hub-Signature-256": "sha256=9d937eb273bf5123f77c470f3ffae92974c8c62d130b4552da9c52ea342a248f",
+        "X-Request-Uuid": "ce83a9f2-205f-4316-a42e-e8eb4cac382c"
+    },
+    "data": {
+        "repository": {
+            "type": "repository",
+            "full_name": "git_slack_pr_bot/test",
+            "links": {
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test"
+                },
+                "html": {
+                    "href": "https://bitbucket.org/git_slack_pr_bot/test"
+                },
+                "avatar": {
+                    "href": "https://bytebucket.org/ravatar/%7Bb9b738df-0d23-455c-83b8-6ab0f2e9651b%7D?ts=default"
+                }
+            },
+            "name": "test",
+            "scm": "git",
+            "website": null,
+            "owner": {
+                "display_name": "git_slack_pr_bot",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/workspaces/%7Bc6ddfa38-4f89-4a5a-9dd7-1f8042055005%7D"
+                    },
+                    "avatar": {
+                        "href": "https://bitbucket.org/account/git_slack_pr_bot/avatar/"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/%7Bc6ddfa38-4f89-4a5a-9dd7-1f8042055005%7D/"
+                    }
+                },
+                "type": "team",
+                "uuid": "{c6ddfa38-4f89-4a5a-9dd7-1f8042055005}",
+                "username": "git_slack_pr_bot"
+            },
+            "workspace": {
+                "type": "workspace",
+                "uuid": "{c6ddfa38-4f89-4a5a-9dd7-1f8042055005}",
+                "name": "git_slack_pr_bot",
+                "slug": "git_slack_pr_bot",
+                "links": {
+                    "avatar": {
+                        "href": "https://bitbucket.org/workspaces/git_slack_pr_bot/avatar/?ts=1753678528"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/git_slack_pr_bot/"
+                    },
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/workspaces/git_slack_pr_bot"
+                    }
+                }
+            },
+            "is_private": false,
+            "project": {
+                "type": "project",
+                "key": "TEST",
+                "uuid": "{94acbceb-75b2-403d-938c-23759e82fd8f}",
+                "name": "test",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/workspaces/git_slack_pr_bot/projects/TEST"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/git_slack_pr_bot/workspace/projects/TEST"
+                    },
+                    "avatar": {
+                        "href": "https://bitbucket.org/git_slack_pr_bot/workspace/projects/TEST/avatar/32?ts=1753678565"
+                    }
+                }
+            },
+            "uuid": "{b9b738df-0d23-455c-83b8-6ab0f2e9651b}",
+            "parent": null
+        },
+        "actor": {
+            "display_name": "modernneo",
+            "links": {
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/users/%7B9dcbf39e-4e6b-4e5d-8ecd-41d499c8ca22%7D"
+                },
+                "avatar": {
+                    "href": "https://secure.gravatar.com/avatar/fda8a23146b3d59a146230a7739081f5?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FM-6.png"
+                },
+                "html": {
+                    "href": "https://bitbucket.org/%7B9dcbf39e-4e6b-4e5d-8ecd-41d499c8ca22%7D/"
+                }
+            },
+            "type": "user",
+            "uuid": "{9dcbf39e-4e6b-4e5d-8ecd-41d499c8ca22}",
+            "account_id": "6029c4d139ed51006a332a69",
+            "nickname": "modernneo"
+        },
+        "pullrequest": {
+            "comment_count": 0,
+            "task_count": 0,
+            "type": "pullrequest",
+            "id": 15,
+            "title": "[NGA-121] PR Title",
+            "description": "",
+            "rendered": {
+                "title": {
+                    "type": "rendered",
+                    "raw": "[NGA-121] PR Title",
+                    "markup": "markdown",
+                    "html": "<p>[NGA-121] PR Title</p>"
+                },
+                "description": {
+                    "type": "rendered",
+                    "raw": "",
+                    "markup": "markdown",
+                    "html": ""
+                }
+            },
+            "state": "OPEN",
+            "draft": false,
+            "merge_commit": null,
+            "close_source_branch": true,
+            "closed_by": null,
+            "author": {
+                "display_name": "modernneo",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/users/%7B9dcbf39e-4e6b-4e5d-8ecd-41d499c8ca22%7D"
+                    },
+                    "avatar": {
+                        "href": "https://secure.gravatar.com/avatar/fda8a23146b3d59a146230a7739081f5?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FM-6.png"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/%7B9dcbf39e-4e6b-4e5d-8ecd-41d499c8ca22%7D/"
+                    }
+                },
+                "type": "user",
+                "uuid": "{9dcbf39e-4e6b-4e5d-8ecd-41d499c8ca22}",
+                "account_id": "6029c4d139ed51006a332a69",
+                "nickname": "modernneo"
+            },
+            "reason": "",
+            "created_on": "2025-12-31T20:00:46.615367+00:00",
+            "updated_on": "2025-12-31T20:00:47.040123+00:00",
+            "destination": {
+                "branch": {
+                    "name": "master"
+                },
+                "commit": {
+                    "hash": "28813d4cfce6",
+                    "links": {
+                        "self": {
+                            "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/commit/28813d4cfce6"
+                        },
+                        "html": {
+                            "href": "https://bitbucket.org/git_slack_pr_bot/test/commits/28813d4cfce6"
+                        }
+                    },
+                    "type": "commit"
+                },
+                "repository": {
+                    "type": "repository",
+                    "full_name": "git_slack_pr_bot/test",
+                    "links": {
+                        "self": {
+                            "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test"
+                        },
+                        "html": {
+                            "href": "https://bitbucket.org/git_slack_pr_bot/test"
+                        },
+                        "avatar": {
+                            "href": "https://bytebucket.org/ravatar/%7Bb9b738df-0d23-455c-83b8-6ab0f2e9651b%7D?ts=default"
+                        }
+                    },
+                    "name": "test",
+                    "uuid": "{b9b738df-0d23-455c-83b8-6ab0f2e9651b}"
+                }
+            },
+            "source": {
+                "branch": {
+                    "name": "NGA-121-case_1",
+                    "links": {},
+                    "sync_strategies": [
+                        "merge_commit",
+                        "rebase"
+                    ]
+                },
+                "commit": {
+                    "hash": "a784d8150062",
+                    "links": {
+                        "self": {
+                            "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/commit/a784d8150062"
+                        },
+                        "html": {
+                            "href": "https://bitbucket.org/git_slack_pr_bot/test/commits/a784d8150062"
+                        }
+                    },
+                    "type": "commit"
+                },
+                "repository": {
+                    "type": "repository",
+                    "full_name": "git_slack_pr_bot/test",
+                    "links": {
+                        "self": {
+                            "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test"
+                        },
+                        "html": {
+                            "href": "https://bitbucket.org/git_slack_pr_bot/test"
+                        },
+                        "avatar": {
+                            "href": "https://bytebucket.org/ravatar/%7Bb9b738df-0d23-455c-83b8-6ab0f2e9651b%7D?ts=default"
+                        }
+                    },
+                    "name": "test",
+                    "uuid": "{b9b738df-0d23-455c-83b8-6ab0f2e9651b}"
+                }
+            },
+            "reviewers": [],
+            "participants": [],
+            "links": {
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/pullrequests/15"
+                },
+                "html": {
+                    "href": "https://bitbucket.org/git_slack_pr_bot/test/pull-requests/15"
+                },
+                "commits": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/pullrequests/15/commits"
+                },
+                "approve": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/pullrequests/15/approve"
+                },
+                "request-changes": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/pullrequests/15/request-changes"
+                },
+                "diff": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/diff/git_slack_pr_bot/test:a784d8150062%0D28813d4cfce6?from_pullrequest_id=15&topic=true"
+                },
+                "diffstat": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/diffstat/git_slack_pr_bot/test:a784d8150062%0D28813d4cfce6?from_pullrequest_id=15&topic=true"
+                },
+                "comments": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/pullrequests/15/comments"
+                },
+                "activity": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/pullrequests/15/activity"
+                },
+                "merge": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/pullrequests/15/merge"
+                },
+                "decline": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/pullrequests/15/decline"
+                },
+                "statuses": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/git_slack_pr_bot/test/pullrequests/15/statuses"
+                }
+            },
+            "summary": {
+                "type": "rendered",
+                "raw": "",
+                "markup": "markdown",
+                "html": ""
+            }
+        }
+    }
+}

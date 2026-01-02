@@ -1,0 +1,46 @@
+services:  #Services that are needed for the git_slack_pr_bot app
+    git_slack_pr_bot_app: #the git_slack_pr_bot app, the name will of the image will be ${COMPOSE_PROJECT_NAME}_git_slack_pr_bot_app
+        build:
+            context: ../../../../ #Saying that all of my source files are at the root path
+            dockerfile: CI/validate_and_deploy/2_deploy/server_scripts/Dockerfile
+        environment:
+            - ENV
+            - PROD_HOST
+            - POSTGRES_DB
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
+            - COMPOSE_PROJECT_NAME
+            - SECRET_KEY
+        volumes: #volume are for hot reload
+            - logs:/src/app/logs
+            - assets:/src/app/assets
+        depends_on:   # used to ensure that docker wont start git_slack_pr_bot until after it has started the database container
+            - "db"
+        container_name: "${COMPOSE_PROJECT_NAME}_app"
+        restart: unless-stopped
+        image: "${COMPOSE_PROJECT_NAME}_app"
+        networks:
+            - git_slack_pr_bot_network
+        ports:
+            -   "8001:8000"
+#        stdin_open: true # docker run -i
+#        tty: true        # docker run -t
+    db: #declaration of the postgres container
+        environment:
+            - POSTGRES_DB
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
+        image: postgres:alpine #using postgres image
+        container_name: "${COMPOSE_PROJECT_NAME}_db"
+        networks:
+            - git_slack_pr_bot_network
+volumes:
+    logs:
+        name: "${COMPOSE_PROJECT_NAME}_logs"
+    assets:
+        name: "${COMPOSE_PROJECT_NAME}_assets"
+
+networks:
+    git_slack_pr_bot_network:
+        name: git_slack_pr_bot_network
+        external: true
