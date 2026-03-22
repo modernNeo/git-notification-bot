@@ -5,6 +5,7 @@ import sys
 from traceback import TracebackException
 
 import pytz
+from django.conf import settings
 
 SYS_LOG_HANDLER_NAME = "sys"
 
@@ -78,22 +79,23 @@ class Loggers:
         :return: the sys logger
         """
         date = datetime.datetime.now(date_timezone).strftime(date_formatting_in_filename)
-        if not os.path.exists(f"logs/{SYS_LOG_HANDLER_NAME}"):
-            os.makedirs(f"logs/{SYS_LOG_HANDLER_NAME}")
-        if not os.path.exists(f"logs/{SYS_LOG_HANDLER_NAME}"):
-            os.makedirs(f"logs/{SYS_LOG_HANDLER_NAME}")
+        logs_path = settings.LOG_DIRECTORY / "logs" / SYS_LOG_HANDLER_NAME
+        if not os.path.exists(logs_path):
+            os.makedirs(logs_path)
+        if not os.path.exists(logs_path):
+            os.makedirs(logs_path)
 
         sys_logger = logging.getLogger(SYS_LOG_HANDLER_NAME)
         sys_logger.setLevel(logging.DEBUG)
 
         debug_log_file_absolute_path = (
-            f"logs/{SYS_LOG_HANDLER_NAME}/{date}_debug.log"
+            logs_path/f"{date}_debug.log"
         )
         sys_stream_warn_log_file_absolute_path = (
-            f"logs/{SYS_LOG_HANDLER_NAME}/{date}_warn.log"
+            logs_path/f"{date}_warn.log"
         )
         sys_stream_error_log_file_absolute_path = (
-            f"logs/{SYS_LOG_HANDLER_NAME}/{date}_error.log"
+            logs_path/f"{date}_error.log"
         )
 
         # ensures that anything printed to this logger at level DEBUG or above goes to the specified file
@@ -146,11 +148,12 @@ class Loggers:
         :return: the logger
         """
         date = datetime.datetime.now(date_timezone).strftime(date_formatting_in_filename)
-        if not os.path.exists(f"logs/{service_name}"):
-            os.makedirs(f"logs/{service_name}")
-        debug_log_file_absolute_path = f"logs/{service_name}/{date}_debug.log"
-        warn_log_file_absolute_path = f"logs/{service_name}/{date}_warn.log"
-        error_log_file_absolute_path = f"logs/{service_name}/{date}_error.log"
+        logs_path = settings.LOG_DIRECTORY / "logs" / service_name
+        if not os.path.exists(logs_path):
+            os.makedirs(logs_path)
+        debug_log_file_absolute_path = logs_path / f"{date}_debug.log"
+        warn_log_file_absolute_path = logs_path / f"{date}_warn.log"
+        error_log_file_absolute_path = logs_path / f"{date}_error.log"
 
         logger = logging.getLogger(service_name)
         logger.setLevel(logging.DEBUG)

@@ -4,8 +4,6 @@ set -e -o xtrace
 # https://stackoverflow.com/a/5750463/7734535
 
 export COMPOSE_PROJECT_NAME="git_notification_bot"
-export ENV="PROD";
-export PROD_HOST="git-slack-pr-bot.modernneo.com";
 
 export prod_container_name="${COMPOSE_PROJECT_NAME}_app"
 export prod_container_db_name="${COMPOSE_PROJECT_NAME}_db"

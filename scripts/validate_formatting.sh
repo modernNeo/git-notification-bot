@@ -32,6 +32,8 @@ docker build --no-cache -t "${docker_test_image_lower_case}" \
 echo "Running validation container..."
 docker run --name "${DOCKER_TEST_CONTAINER}" --env-file git_notification_bot.env "${docker_test_image_lower_case}"
 
+docker cp "${DOCKER_TEST_CONTAINER}/src/app/test.xml" test_results/test.xml
+
 # 6. Capture the exit code immediately
 test_exit_code=$(docker inspect "${DOCKER_TEST_CONTAINER}" --format='{{.State.ExitCode}}')
 

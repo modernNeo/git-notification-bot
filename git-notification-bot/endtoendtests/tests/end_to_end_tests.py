@@ -1,8 +1,10 @@
 # flake8: noqa: E501
 import re
+import pytest
 
 from django.test import TestCase
 
+from atlassian.views.get_ticket_title import token_is_valid
 from bitbucket_webhook.views.payload_processor import payload_processor
 from endtoendtests.tests.BitbucketRequest import BitbucketRequest
 from endtoendtests.tests.send_messages import send_messages
@@ -13,6 +15,12 @@ SEND_SLACK_MESSAGES = False
 
 
 class EndtoEndTests(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        if not token_is_valid("NGA-123"):
+            pytest.skip("Token invalid: Skipping all EndtoEndTests")
 
     def test_pr_create_and_published_at_same_time_with_no_request_reviewers(self):
         pr_published_with_no_reviewers = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_1.json")
