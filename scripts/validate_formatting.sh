@@ -11,7 +11,6 @@ cleanup() {
     echo "Performing cleanup..."
     docker rm -f "${DOCKER_TEST_CONTAINER}" 2>/dev/null || true
     docker image rm -f "${docker_test_image_lower_case}" 2>/dev/null || true
-    rm -rf "${LOCALHOST_TEST_DIR}" || true
 }
 # Trap will run the cleanup function on script exit or interrupt
 trap cleanup EXIT
