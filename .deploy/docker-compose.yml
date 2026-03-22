@@ -1,24 +1,21 @@
 services:  #Services that are needed for the git_slack_pr_bot app
-    git_slack_pr_bot_app: #the git_slack_pr_bot app, the name will of the image will be ${COMPOSE_PROJECT_NAME}_git_slack_pr_bot_app
+    git_notification_bot_app: #the git_slack_pr_bot app, the name will of the image will be ${COMPOSE_PROJECT_NAME}_git_slack_pr_bot_app
         build:
-            context: ../../../../ #Saying that all of my source files are at the root path
-            dockerfile: CI/validate_and_deploy/2_deploy/server_scripts/Dockerfile
-        environment:
-            - ENV
-            - PROD_HOST
-            - POSTGRES_DB
-            - POSTGRES_USER
-            - POSTGRES_PASSWORD
-            - COMPOSE_PROJECT_NAME
-            - SECRET_KEY
+            context: ../ #Saying that all of my source files are at the root path
+            dockerfile: Dockerfile
         volumes: #volume are for hot reload
             - logs:/src/app/logs
             - assets:/src/app/assets
         depends_on:   # used to ensure that docker wont start git_slack_pr_bot until after it has started the database container
-            - "db"
+            db:
+                condition: service_healthy
+                restart: true
         container_name: "${COMPOSE_PROJECT_NAME}_app"
         restart: unless-stopped
         image: "${COMPOSE_PROJECT_NAME}_app"
+        env_file:
+            - ../git_notification_bot.env
+            - ../git_notification_bot_db.env
         networks:
             - git_slack_pr_bot_network
         ports:
@@ -26,14 +23,18 @@ services:  #Services that are needed for the git_slack_pr_bot app
 #        stdin_open: true # docker run -i
 #        tty: true        # docker run -t
     db: #declaration of the postgres container
-        environment:
-            - POSTGRES_DB
-            - POSTGRES_USER
-            - POSTGRES_PASSWORD
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 10s
+            retries: 5
+            start_period: 30s
+            timeout: 10s
         image: postgres:alpine #using postgres image
         container_name: "${COMPOSE_PROJECT_NAME}_db"
         networks:
             - git_slack_pr_bot_network
+        env_file:
+            - ../git_notification_bot_db.env
 volumes:
     logs:
         name: "${COMPOSE_PROJECT_NAME}_logs"
@@ -43,4 +44,3 @@ volumes:
 networks:
     git_slack_pr_bot_network:
         name: git_slack_pr_bot_network
-        external: true

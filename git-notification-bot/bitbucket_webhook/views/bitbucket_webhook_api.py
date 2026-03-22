@@ -14,4 +14,4 @@ class BitbucketWebhook(views.APIView):
         logger.info(json.dumps({**request.headers}, indent=4))
         logger.info(json.dumps(request.data, indent=4))
         messages = payload_processor(request)
-        return messages
+        return messages.api_response

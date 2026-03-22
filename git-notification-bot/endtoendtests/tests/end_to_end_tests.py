@@ -8,7 +8,7 @@ from endtoendtests.tests.send_messages import send_messages
 
 # Create your tests here
 
-SEND_SLACK_MESSAGES = True
+SEND_SLACK_MESSAGES = False
 
 
 class EndtoEndTests(TestCase):

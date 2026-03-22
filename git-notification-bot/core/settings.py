@@ -10,24 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
-from enum import Enum
+import sys
+from enum import Enum, auto
 from pathlib import Path
+
+import dj_database_url
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+z=6t#o!^h6324o172qpeh3k3zb22qcgd9%i4pz5lxbg4t!i2k'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 # Application definition
 
@@ -38,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bitbucket_webhook',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -69,17 +74,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEVELOPMENT_MODE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-
+elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+    if os.getenv("DATABASE_URL", None) is None:
+        raise Exception("DATABASE_URL environment variable not defined")
+    DATABASES = {
+        "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -99,7 +109,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -111,39 +120,42 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 class MessagingServiceOption(Enum):
-    SLACK = 1
+    SLACK = auto()
+
 
 class GitHostingOption(Enum):
-    BITBUCKET = 1
-
+    BITBUCKET = auto()
 
 class JiraTagExtractionSource(Enum):
-    TITLE = 1
-    DESCRIPTION = 2
+    TITLE = auto()
+    DESCRIPTION = auto()
 
-MESSAGING_SERVICE = os.environ.get("MESSAGING_SERVICE", None)
-SLACK_BOT_USER_OAUTH_TOKEN = None
-if MESSAGING_SERVICE:
+
+
+
+try:
+    GIT_HOSTING_SERVICE = GitHostingOption[os.environ["GIT_HOSTING_SERVICE"]]
+except (KeyError, ValueError):
+    raise ValueError(f"Invalid or missing GIT_HOSTING_SERVICE: Options: {list(GitHostingOption)}")
+
+try:
+    MESSAGING_SERVICE = MessagingServiceOption[os.environ["MESSAGING_SERVICE"]]
+except (KeyError, ValueError):
+    raise ValueError(f"Invalid or missing MESSAGING_SERVICE: Options: {list(MessagingServiceOption)}")
+
+if MESSAGING_SERVICE == MessagingServiceOption.SLACK:
     try:
-        MESSAGING_SERVICE = MessagingServiceOption[MESSAGING_SERVICE]
         SLACK_BOT_USER_OAUTH_TOKEN = os.environ.get('SLACK_BOT_USER_OAUTH_TOKEN', None)
     except KeyError:
-        raise Exception("Did not receive a valid SELECTED_MODE")
+        raise Exception("Did not receive a valid SLACK_BOT_USER_OAUTH_TOKEN")
 
-
-GIT_HOSTING_SERVICE = os.environ.get("GIT_HOSTING_SERVICE", None)
-if GIT_HOSTING_SERVICE:
-    try:
-        GIT_HOSTING_SERVICE = GitHostingOption[GIT_HOSTING_SERVICE]
-    except KeyError:
-        raise Exception("Did not receive a valid GIT_HOSTING_SERVICE")
 
 
 ####################################
@@ -172,8 +184,6 @@ if ATLASSIAN_SUBNET or JIRA_API_TOKEN or JIRA_TAG_PATTERN_MATCHER or JIRA_TAG_EX
         raise Exception("Missing JIRA_TAG_PATTERN_MATCHER")
     if JIRA_TAG_EXTRACTION_SOURCE is None:
         raise Exception("Missing JIRA_TAG_EXTRACTION_SOURCE")
-
-
 
 # used to verify the bitbucket webhook payloads
 BITBUCKET_SECRET = os.environ.get('BITBUCKET_SECRET', None)

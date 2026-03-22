@@ -47,9 +47,9 @@ def create_commit_footer_link(commit_message: str, commit_link: str) -> str:
 
 
 def _extract_jira_tag(title: str) -> None | str:
-    if settings.JRA_TAG_PATTERN_MATCHER is None:
+    if settings.JIRA_TAG_PATTERN_MATCHER is None:
         return None
-    results = re.search(settings.JRA_TAG_PATTERN_MATCHER, title)
+    results = re.search(settings.JIRA_TAG_PATTERN_MATCHER, title)
     if results is None:
         return None
     return results.group()[1:-2]
