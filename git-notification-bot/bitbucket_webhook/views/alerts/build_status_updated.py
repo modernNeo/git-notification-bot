@@ -24,5 +24,5 @@ def process(payload):
                 build_status_link, test_name
             )
         ],
-        HttpResponse(f"Successfully processed action for update in build status.")
+        HttpResponse("Successfully processed action for update in build status.")
     )

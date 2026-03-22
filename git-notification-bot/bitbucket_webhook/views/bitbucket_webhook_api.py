@@ -7,6 +7,7 @@ from python_logging.setup_logger import Loggers
 
 logger = Loggers.get_logger(logger_name="bitbucket_logging")[0]
 
+
 class BitbucketWebhook(views.APIView):
 
     def post(self, request):

@@ -13,7 +13,7 @@ def process(payload):
     pr_description = payload['pullrequest']['description']
     return MessagesToSend(
         [create_changes_requested_message_for_pr_author(pr_author_atlassian_id,
-                                                        atlassian_id_for_person_who_requested_changes, pr_title, pr_description,
-                                                        pr_link)],
-        HttpResponse(f"Successfully processed action for change requested on PR.")
+                                                        atlassian_id_for_person_who_requested_changes, pr_title,
+                                                        pr_description, pr_link)],
+        HttpResponse("Successfully processed action for change requested on PR.")
     )

@@ -17,8 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-import bitbucket_webhook
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('bitbucket/', include('bitbucket_webhook.urls'))

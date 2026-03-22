@@ -2,8 +2,9 @@ from slack.views.message_creation.utilities import get_slack_id_by_atlassian_acc
     create_pr_footer_link
 
 
-def create_message_for_pr_comment_for_pr_author(author_atlassian_id: str, comment_author_account_id: str, comment: str,
-                                                pr_title: str, pr_description, pr_link: str, comment_link: str):
+def create_message_for_pr_comment_for_pr_author(author_atlassian_id: str, comment_author_account_id: str,
+                                                comment: str, pr_title: str, pr_description, pr_link: str,
+                                                comment_link: str):
     author_slack_id = get_slack_id_by_atlassian_account_id(author_atlassian_id)
     return {
         "channel": author_slack_id,

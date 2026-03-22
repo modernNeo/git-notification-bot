@@ -15,5 +15,5 @@ def process(payload):
     return MessagesToSend(
         [create_pr_approved_message_for_pr_author(author_atlassian_id, atlassian_id_for_person_who_approved_pr,
                                                   pr_title, pr_description, pr_link)],
-        HttpResponse(f"Successfully processed action for approved PR.")
+        HttpResponse("Successfully processed action for approved PR.")
     )

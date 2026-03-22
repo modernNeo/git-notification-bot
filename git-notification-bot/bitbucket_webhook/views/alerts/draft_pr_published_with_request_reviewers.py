@@ -13,10 +13,10 @@ def process(payload):
     for reviewer in payload['pullrequest']['reviewers']:
         requested_reviewer_atlassian_id = reviewer['account_id']
         messages.append(
-            create_message_for_pr_reviewer(author_atlassian_id, requested_reviewer_atlassian_id, pr_title, pr_description,
-                                           pr_link)
+            create_message_for_pr_reviewer(author_atlassian_id, requested_reviewer_atlassian_id, pr_title,
+                                           pr_description, pr_link)
         )
     return MessagesToSend(
         messages,
-        HttpResponse(f"Successfully processed action for PR published with reviewers.")
+        HttpResponse("Successfully processed action for PR published with reviewers.")
     )

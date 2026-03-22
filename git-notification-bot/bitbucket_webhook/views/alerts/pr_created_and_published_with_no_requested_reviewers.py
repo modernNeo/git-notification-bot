@@ -11,5 +11,5 @@ def process(payload):
     pr_link = payload['pullrequest']['links']['html']['href']
     return MessagesToSend(
         [create_message_for_pr_author(author_atlassian_id, pr_title, pr_description, pr_link)],
-        HttpResponse(f"Successfully processed action for PR published with no reviewers.")
+        HttpResponse("Successfully processed action for PR published with no reviewers.")
     )

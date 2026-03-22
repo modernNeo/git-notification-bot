@@ -1,8 +1,11 @@
 [tool.pytest.ini_options]
-addopts = "--flake8"
+# -ra: summary for (a)ll except passed
+# -q:  (q)uietly hide the system header
+addopts = "-ra -q --junitxml=test.xml"
+# Replace 'core.settings' with the actual path to your settings.py
+# (e.g., 'git_notification_bot.settings' if that's where it is)
+DJANGO_SETTINGS_MODULE = "core.settings"
 norecursedirs = ["local_development"]
 junit_family = "legacy"
-
-[tool.flake8]
-max-line-length = 118
-extend-ignore = "SFS301"
+testpaths = ["endtoendtests"]
+python_files = ["test_*.py", "*_test.py", "*.py"]

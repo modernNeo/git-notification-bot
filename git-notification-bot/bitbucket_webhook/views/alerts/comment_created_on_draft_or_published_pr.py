@@ -16,7 +16,7 @@ def process(payload):
     comment_info = payload['comment']
     comment = comment_info['content']['raw']
     comment_author_account_id = comment_info['user']['account_id']
-    parent_comment_id = comment_info['id']
+    parent_comment_id = comment_info['id']  # noqa
     pr_title = payload['pullrequest']['title']
     pr_link = payload['pullrequest']['links']['html']['href']
     comment_link = payload['comment']['links']['html']['href']
@@ -35,10 +35,10 @@ def process(payload):
     )
     for atlassian_id_for_person_to_alert in atlassian_ids_for_people_to_alert:
         messages.append(create_message_for_pr_comment_for_mentioned_user(atlassian_id_for_person_to_alert,
-                                                                         comment_author_account_id, author_atlassian_id,
-                                                                         comment, pr_title, pr_description, pr_link,
-                                                                         comment_link))
+                                                                         comment_author_account_id,
+                                                                         author_atlassian_id, comment, pr_title,
+                                                                         pr_description, pr_link, comment_link))
     return MessagesToSend(
         messages,
-        HttpResponse(f"Successfully processed action for comment on PR.")
+        HttpResponse("Successfully processed action for comment on PR.")
     )

@@ -1,43 +1,46 @@
 #!/bin/bash
 
 # PURPOSE: used by jenkins to run the code past the linter
-
 set -e -o xtrace
 
-docker_test_image_lower_case=$(echo "$DOCKER_TEST_IMAGE" | awk '{print tolower($0)}')
+# 1. Normalize image name
 
-docker rm -f ${DOCKER_TEST_CONTAINER} || true
-docker image rm -f ${docker_test_image_lower_case} || true
+# 2. Cleanup function to ensure Jenkins workspace stays clean regardless of success/fail
+# shellcheck disable=SC2317
+cleanup() {
+    echo "Performing cleanup..."
+    docker rm -f "${DOCKER_TEST_CONTAINER}" 2>/dev/null || true
+    docker image rm -f "${docker_test_image_lower_case}" 2>/dev/null || true
+}
+# Trap will run the cleanup function on script exit or interrupt
+trap cleanup EXIT
 
-rm -r ${LOCALHOST_TEST_DIR} || true
-mkdir -p ${LOCALHOST_TEST_DIR}
 
+export LOCALHOST_TEST_DIR="validate_formatting"
+export DOCKER_TEST_CONTAINER="git_notification_bot_test"
+export docker_test_image_lower_case="git_notification_bot_test"
+# 3. Prepare local directories
+rm -rf "${LOCALHOST_TEST_DIR}"
+mkdir -p "${LOCALHOST_TEST_DIR}"
 
-docker build --no-cache -t ${docker_test_image_lower_case} \
-    -f CI/validate_and_deploy/1_validate/Dockerfile.test \
-    --build-arg CONTAINER_HOME_DIR=${CONTAINER_HOME_DIR} \
-    --build-arg UNIT_TEST_RESULTS=${CONTAINER_TEST_DIR} \
-    --build-arg TEST_RESULT_FILE_NAME=${TEST_RESULT_FILE_NAME} .
+# 4. Build the test image
+docker build --no-cache -t "${docker_test_image_lower_case}" \
+    -f Dockerfile.lint  .
 
-docker run -d --name ${DOCKER_TEST_CONTAINER} ${docker_test_image_lower_case}
-while [ "$(docker inspect -f '{{.State.Running}}' ${DOCKER_TEST_CONTAINER})" == "true" ]
-do
-	echo "waiting for the python formatting validation to finish"
-	sleep 1
-done
-docker cp ${DOCKER_TEST_CONTAINER}:${CONTAINER_TEST_DIR}/${TEST_RESULT_FILE_NAME} ${LOCALHOST_TEST_DIR}/${TEST_RESULT_FILE_NAME}
+# 5. Run synchronously (No more while loop!)
+# Using --name allows us to reference it for 'cp' afterwards even if it's stopped.
+echo "Running validation container..."
+docker run --name "${DOCKER_TEST_CONTAINER}" --env-file git_notification_bot.env "${docker_test_image_lower_case}"
 
-test_container_failed=$(docker inspect ${DOCKER_TEST_CONTAINER} --format='{{.State.ExitCode}}')
+# 6. Capture the exit code immediately
+test_exit_code=$(docker inspect "${DOCKER_TEST_CONTAINER}" --format='{{.State.ExitCode}}')
 
-if [ "${test_container_failed}" -eq "1" ]; then
-    docker logs ${DOCKER_TEST_CONTAINER}
-    docker stop ${DOCKER_TEST_CONTAINER} || true
-    docker rm ${DOCKER_TEST_CONTAINER} || true
-    docker image rm -f ${docker_test_image_lower_case} || true
+# 8. Handle Failure vs Success
+if [ "${test_exit_code}" -ne "0" ]; then
+    echo "Validation failed with exit code ${test_exit_code}. Dumping logs:"
+    docker logs "${DOCKER_TEST_CONTAINER}"
     exit 1
 fi
 
-docker stop ${DOCKER_TEST_CONTAINER} || true
-docker rm ${DOCKER_TEST_CONTAINER} || true
-docker image rm -f ${docker_test_image_lower_case} || true
+echo "Validation passed!"
 exit 0

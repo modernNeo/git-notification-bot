@@ -3,7 +3,7 @@ import hmac
 import json
 
 from django.conf import settings
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponse
 from rest_framework.exceptions import ValidationError
 
 from bitbucket_webhook.views.alerts.build_status_updated import process as build_status_updated
@@ -50,7 +50,7 @@ def payload_processor(request) -> MessagesToSend:
         else:
             return MessagesToSend(
                 [],
-                HttpResponse(f"Skipping processing for draft PR.")
+                HttpResponse("Skipping processing for draft PR.")
             )
     if event_key == 'pullrequest:updated':
         if published_pr and no_reviewers:
@@ -60,7 +60,7 @@ def payload_processor(request) -> MessagesToSend:
         elif draft_pr:
             return MessagesToSend(
                 [],
-                HttpResponse(f"Skipping processing for draft PR.")
+                HttpResponse("Skipping processing for draft PR.")
             )
     elif event_key == "pullrequest:comment_created":
         return comment_created_on_draft_or_published_pr(request.data)
@@ -97,7 +97,7 @@ def _verify_request(request):
         msg=modified_payload.encode("utf-8"),
         digestmod=hashlib.sha256,
     )
-    calculated_signature = "sha256=" + hash_object.hexdigest()
+    calculated_signature = "sha256=" + hash_object.hexdigest() # noqa F841
 
     # if not hmac.compare_digest(calculated_signature, given_signature):
     #     raise ValidationError({

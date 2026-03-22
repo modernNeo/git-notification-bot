@@ -84,7 +84,7 @@ if DEVELOPMENT_MODE:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+elif len(sys.argv) > 1 and sys.argv[1] != 'collectstatic':
     if os.getenv("DATABASE_URL", None) is None:
         raise Exception("DATABASE_URL environment variable not defined")
     DATABASES = {
@@ -126,6 +126,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+
 class MessagingServiceOption(Enum):
     SLACK = auto()
 
@@ -133,11 +134,10 @@ class MessagingServiceOption(Enum):
 class GitHostingOption(Enum):
     BITBUCKET = auto()
 
+
 class JiraTagExtractionSource(Enum):
     TITLE = auto()
     DESCRIPTION = auto()
-
-
 
 
 try:
@@ -156,11 +156,9 @@ if MESSAGING_SERVICE == MessagingServiceOption.SLACK:
     except KeyError:
         raise Exception("Did not receive a valid SLACK_BOT_USER_OAUTH_TOKEN")
 
-
-
-####################################
-## used for information in footer ##
-####################################
+##################################
+# used for information in footer #
+##################################
 # getting ticket title [used for JIRA links] and JIRA link URL creation
 ATLASSIAN_SUBNET = os.environ.get('ATLASSIAN_SUBNET', None)
 # getting ticket title [used for JIRA links]
