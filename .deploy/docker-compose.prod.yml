@@ -8,7 +8,14 @@ services:  #Services that are needed for the git_slack_pr_bot app
                 condition: service_healthy
                 restart: true
         container_name: "${COMPOSE_PROJECT_NAME}_app"
+        restart: unless-stopped
         image: "${COMPOSE_PROJECT_NAME}_app"
+        secrets:
+            - POSTGRES_PASSWORD
+            - DATABASE_URL
+        environment:
+            - DEVELOPMENT_MODE=False
+            - DEBUG=False
         networks:
             - git_slack_pr_bot_network
         ports:
@@ -21,6 +28,8 @@ services:  #Services that are needed for the git_slack_pr_bot app
             start_period: 30s
             timeout: 10s
         image: postgres:alpine #using postgres image
+        secrets:
+            - POSTGRES_PASSWORD
         container_name: "${COMPOSE_PROJECT_NAME}_db"
         networks:
             - git_slack_pr_bot_network
@@ -28,7 +37,10 @@ services:  #Services that are needed for the git_slack_pr_bot app
 networks:
     git_slack_pr_bot_network:
         name: git_slack_pr_bot_network
+        external: true
 
 secrets:
     POSTGRES_PASSWORD:
+        external: true
     DATABASE_URL:
+        external: true

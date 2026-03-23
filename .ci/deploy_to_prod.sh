@@ -7,7 +7,8 @@ export COMPOSE_PROJECT_NAME="git_notification_bot"
 
 export prod_container_name="${COMPOSE_PROJECT_NAME}_app"
 export prod_container_db_name="${COMPOSE_PROJECT_NAME}_db"
-export docker_compose_file=".deploy/docker-compose.yml"
+export docker_compose_file_core=".deploy/docker-compose.yml"
+export docker_compose_file_prod=".deploy/docker-compose.prod.yml"
 export prod_image_name_lower_case="${prod_container_name,,}"
 
 docker rm -f "${prod_container_name}" || true
@@ -22,7 +23,7 @@ if [ ${#images_to_delete[@]} -gt 0 ]; then
 fi
 
 docker volume create --name="${COMPOSE_PROJECT_NAME}_logs"
-docker compose -f "${docker_compose_file}" up -d
+docker compose -f "${docker_compose_file_core}" -f "${docker_compose_file_prod}" up -d
 
 sleep 20
 
