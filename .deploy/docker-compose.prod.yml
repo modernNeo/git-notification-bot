@@ -12,10 +12,12 @@ services:  #Services that are needed for the git_slack_pr_bot app
         image: "${COMPOSE_PROJECT_NAME}_app"
         secrets:
             - DATABASE_URL
+            - DJANGO_ALLOWED_HOSTS
         environment:
             - DEVELOPMENT_MODE=True
             - DEBUG=True
             - DATABASE_URL_FILE=/run/secrets/DATABASE_URL
+            - DJANGO_ALLOWED_HOSTS_FILE=/run/secrets/DJANGO_ALLOWED_HOSTS
         networks:
             - git_notification_bot_network
     db: #declaration of the postgres container
@@ -52,3 +54,5 @@ secrets:
         environment: "POSTGRES_PASSWORD"
     DATABASE_URL:
         environment: "DATABASE_URL"
+    DJANGO_ALLOWED_HOSTS:
+        environment: "DJANGO_ALLOWED_HOSTS"
