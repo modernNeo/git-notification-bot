@@ -17,9 +17,14 @@ pipeline {
 			}
 			steps {
                 script {
-                    withCredentials([string(credentialsId: 'GIT_NOTIFICATION_BOT_POSTGRES_PASSWORD', variable: 'POSTGRES_PASSWORD'),
-                                    string(credentialsId: 'GIT_NOTIFICATION_BOT_DATABASE_URL', variable: 'DATABASE_URL')]) {
+                    withCredentials([
+                        string(credentialsId: 'GIT_NOTIFICATION_BOT_POSTGRES_DB', variable: 'POSTGRES_DB'),
+                        string(credentialsId: 'GIT_NOTIFICATION_BOT_POSTGRES_USER', variable: 'POSTGRES_USER'),
+                        string(credentialsId: 'GIT_NOTIFICATION_BOT_POSTGRES_PASSWORD', variable: 'POSTGRES_PASSWORD'),
+                        string(credentialsId: 'GIT_NOTIFICATION_BOT_DATABASE_URL', variable: 'DATABASE_URL')]) {
                             sh '''
+                            export POSTGRES_DB="${POSTGRES_DB}"
+                            export POSTGRES_USER="${POSTGRES_USER}"
                             export POSTGRES_PASSWORD="${POSTGRES_PASSWORD}"
                             export DATABASE_URL="${DATABASE_URL}"
 

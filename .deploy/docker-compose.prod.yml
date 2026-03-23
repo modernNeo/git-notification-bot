@@ -27,8 +27,12 @@ services:  #Services that are needed for the git_slack_pr_bot app
             timeout: 10s
         image: postgres:alpine #using postgres image
         secrets:
+            - POSTGRES_DB
+            - POSTGRES_USER
             - POSTGRES_PASSWORD
         environment:
+            - POSTGRES_DB_FILE=/run/secrets/POSTGRES_DB
+            - POSTGRES_USER_FILE=/run/secrets/POSTGRES_USER
             - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_PASSWORD
         container_name: "${COMPOSE_PROJECT_NAME}_db"
         networks:
@@ -40,6 +44,10 @@ networks:
         external: true
 
 secrets:
+    POSTGRES_DB:
+        environment: "POSTGRES_DB"
+    POSTGRES_USER:
+        environment: "POSTGRES_USER"
     POSTGRES_PASSWORD:
         environment: "POSTGRES_PASSWORD"
     DATABASE_URL:
