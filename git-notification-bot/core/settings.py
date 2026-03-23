@@ -17,6 +17,24 @@ from pathlib import Path
 import dj_database_url
 from django.core.management.utils import get_random_secret_key
 
+
+def get_secret(secret_name, default=None):
+    """
+    Checks for a secret in /run/secrets/ via a *_FILE environment variable.
+    Falls back to a standard environment variable if the file isn't found.
+    """
+    # Look for the path (e.g., DATABASE_URL_FILE)
+    secret_path = os.environ.get(f"{secret_name}_FILE")
+
+    if secret_path and os.path.isfile(secret_path):
+        with open(secret_path, 'r') as f:
+            # .strip() is CRITICAL because Docker/Echo often adds a newline (\n)
+            return f.read().strip()
+
+    # Fallback to standard Env Var (useful for local dev)
+    return os.environ.get(secret_name, default)
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 REPO_DIR = BASE_DIR.parent
@@ -89,10 +107,10 @@ if DEVELOPMENT_MODE:
     }
 elif len(sys.argv) > 1 and sys.argv[1] != 'collectstatic':
     LOG_DIRECTORY = BASE_DIR
-    if os.getenv("DATABASE_URL", None) is None:
+    if get_secret('DATABASE_URL') is None:
         raise Exception("DATABASE_URL environment variable not defined")
     DATABASES = {
-        "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+        "default": dj_database_url.parse(get_secret('DATABASE_URL')),
     }
 
 # Password validation

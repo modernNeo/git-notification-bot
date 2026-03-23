@@ -11,11 +11,11 @@ services:  #Services that are needed for the git_slack_pr_bot app
         restart: unless-stopped
         image: "${COMPOSE_PROJECT_NAME}_app"
         secrets:
-            - POSTGRES_PASSWORD
             - DATABASE_URL
         environment:
             - DEVELOPMENT_MODE=False
             - DEBUG=False
+            - DATABASE_URL_FILE=/run/secrets/DATABASE_URL
         networks:
             - git_slack_pr_bot_network
         ports:
@@ -30,6 +30,8 @@ services:  #Services that are needed for the git_slack_pr_bot app
         image: postgres:alpine #using postgres image
         secrets:
             - POSTGRES_PASSWORD
+        environment:
+            - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_PASSWORD
         container_name: "${COMPOSE_PROJECT_NAME}_db"
         networks:
             - git_slack_pr_bot_network
@@ -41,6 +43,6 @@ networks:
 
 secrets:
     POSTGRES_PASSWORD:
-        external: true
+        environment: "POSTGRES_PASSWORD"
     DATABASE_URL:
-        external: true
+        environment: "DATABASE_URL"

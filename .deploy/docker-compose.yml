@@ -28,7 +28,3 @@ services:  #Services that are needed for the git_slack_pr_bot app
 networks:
     git_slack_pr_bot_network:
         name: git_slack_pr_bot_network
-
-secrets:
-    POSTGRES_PASSWORD:
-    DATABASE_URL:

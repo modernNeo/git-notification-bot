@@ -6,7 +6,6 @@ pipeline {
 		stage('Validate Formatting') {
 			steps {
 				echo 'Checking code style and formatting...'
-				// Ensure script is executable and run it
 				sh 'chmod +x ./scripts/validate_formatting.sh'
 				sh './scripts/validate_formatting.sh'
 			}
@@ -17,19 +16,25 @@ pipeline {
 				branch 'master'
 			}
 			steps {
-				withCredentials([string(credentialsId: 'GIT_NOTIFICATION_BOT_POSTGRES_PASSWORD', variable: 'POSTGRES_PASSWORD')]) {
-					sh """
-					echo 'Deploying to production...'
-					// Ensure the script is executable and then run it
-					chmod +x ./ci/deploy_to_prod.sh
-					echo $POSTGRES_PASSWORD | docker secret create POSTGRES_PASSWORD - || true
-					./ci/deploy_to_prod.sh
-                    """
-				}
-			}
-		}
-	}
+                script {
+                    withCredentials([string(credentialsId: 'GIT_NOTIFICATION_BOT_POSTGRES_PASSWORD', variable: 'POSTGRES_PASSWORD'),
+                                    string(credentialsId: 'GIT_NOTIFICATION_BOT_DATABASE_URL', variable: 'DATABASE_URL')]) {
+                            sh '''
+                            export POSTGRES_PASSWORD="${POSTGRES_PASSWORD}"
+                            export DATABASE_URL="${DATABASE_URL}"
 
+                            echo 'Deploying to production...'
+                            # Ensure the script is executable and then run it
+                            chmod +x ./.ci/deploy_to_prod.sh
+
+
+                            ./.ci/deploy_to_prod.sh
+                            '''
+                    }
+                }
+		    }
+	    }
+	}
 	post {
 		always {
 			script {
