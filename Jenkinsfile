@@ -21,9 +21,9 @@ pipeline {
 					sh """
 					echo 'Deploying to production...'
 					// Ensure the script is executable and then run it
-					chmod +x ./deploy_to_prod.sh
+					chmod +x ./ci/deploy_to_prod.sh
 					echo $POSTGRES_PASSWORD | docker secret create POSTGRES_PASSWORD - || true
-					./deploy_to_prod.sh
+					./ci/deploy_to_prod.sh
                     """
 				}
 			}
