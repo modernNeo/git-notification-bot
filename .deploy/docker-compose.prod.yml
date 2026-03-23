@@ -20,7 +20,7 @@ services:  #Services that are needed for the git_slack_pr_bot app
             - git_notification_bot_network
     db: #declaration of the postgres container
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
             interval: 10s
             retries: 5
             start_period: 30s
