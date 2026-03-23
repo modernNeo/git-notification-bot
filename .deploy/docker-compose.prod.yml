@@ -13,8 +13,8 @@ services:  #Services that are needed for the git_slack_pr_bot app
         secrets:
             - DATABASE_URL
         environment:
-            - DEVELOPMENT_MODE=False
-            - DEBUG=False
+            - DEVELOPMENT_MODE=True
+            - DEBUG=True
             - DATABASE_URL_FILE=/run/secrets/DATABASE_URL
         networks:
             - git_notification_bot_network
