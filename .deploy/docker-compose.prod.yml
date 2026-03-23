@@ -17,9 +17,7 @@ services:  #Services that are needed for the git_slack_pr_bot app
             - DEBUG=False
             - DATABASE_URL_FILE=/run/secrets/DATABASE_URL
         networks:
-            - git_notification_bot_app_network
-        ports:
-            -   "8001:8000"
+            - git_notification_bot_network
     db: #declaration of the postgres container
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
@@ -34,11 +32,11 @@ services:  #Services that are needed for the git_slack_pr_bot app
             - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_PASSWORD
         container_name: "${COMPOSE_PROJECT_NAME}_db"
         networks:
-            - git_notification_bot_app_network
+            - git_notification_bot_network
 
 networks:
-    git_notification_bot_app_network:
-        name: git_notification_bot_app_network
+    git_notification_bot_network:
+        name: git_notification_bot_network
         external: true
 
 secrets:
