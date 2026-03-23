@@ -143,16 +143,16 @@ class JiraTagExtractionSource(Enum):
 # except (KeyError, ValueError):
 #     raise ValueError(f"Invalid or missing GIT_HOSTING_SERVICE: Options: {list(GitHostingOption)}")
 
-try:
-    MESSAGING_SERVICE = MessagingServiceOption[os.environ["MESSAGING_SERVICE"]]
-except (KeyError, ValueError):
-    raise ValueError(f"Invalid or missing MESSAGING_SERVICE: Options: {list(MessagingServiceOption)}")
-
-if MESSAGING_SERVICE == MessagingServiceOption.SLACK:
-    try:
-        SLACK_BOT_USER_OAUTH_TOKEN = os.environ.get('SLACK_BOT_USER_OAUTH_TOKEN', None)
-    except KeyError:
-        raise Exception("Did not receive a valid SLACK_BOT_USER_OAUTH_TOKEN")
+# try:
+#     MESSAGING_SERVICE = MessagingServiceOption[os.environ["MESSAGING_SERVICE"]]
+# except (KeyError, ValueError):
+#     raise ValueError(f"Invalid or missing MESSAGING_SERVICE: Options: {list(MessagingServiceOption)}")
+#
+# if MESSAGING_SERVICE == MessagingServiceOption.SLACK:
+#     try:
+#         SLACK_BOT_USER_OAUTH_TOKEN = os.environ.get('SLACK_BOT_USER_OAUTH_TOKEN', None)
+#     except KeyError:
+#         raise Exception("Did not receive a valid SLACK_BOT_USER_OAUTH_TOKEN")
 
 ##################################
 # used for information in footer #
