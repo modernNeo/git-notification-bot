@@ -26,10 +26,22 @@ mkdir -p "${LOCALHOST_TEST_DIR}"
 # 4. Build the test image
 docker build --no-cache -t "${docker_test_image_lower_case}" -f Dockerfile.lint  .
 
+echo "Checking for environment file..."
+ENV_FILE="git_notification_bot.env"
+declare -a ENV_ARGS=() # Initialize an empty array
+
+# Only add the flag if the file exists on the host
+if [ -f "$ENV_FILE" ]; then
+    echo "Found $ENV_FILE, applying to container."
+    ENV_ARGS=("--env-file" "$ENV_FILE") # Add two distinct elements to the array
+else
+    echo "No env file found at $ENV_FILE, skipping flag."
+fi
+
 # 5. Run synchronously (No more while loop!)
 # Using --name allows us to reference it for 'cp' afterwards even if it's stopped.
 echo "Running validation container..."
-docker run --name "${DOCKER_TEST_CONTAINER}" --env-file git_notification_bot.env "${docker_test_image_lower_case}"
+docker run --name "${DOCKER_TEST_CONTAINER}" "${ENV_ARGS[@]}" "${docker_test_image_lower_case}"
 
 docker cp "${DOCKER_TEST_CONTAINER}:/src/app/test.xml" "${LOCALHOST_TEST_DIR}/test.xml"
 
