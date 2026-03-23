@@ -138,10 +138,10 @@ class JiraTagExtractionSource(Enum):
     DESCRIPTION = auto()
 
 
-try:
-    GIT_HOSTING_SERVICE = GitHostingOption[os.environ["GIT_HOSTING_SERVICE"]]
-except (KeyError, ValueError):
-    raise ValueError(f"Invalid or missing GIT_HOSTING_SERVICE: Options: {list(GitHostingOption)}")
+# try:
+#     GIT_HOSTING_SERVICE = GitHostingOption[os.environ["GIT_HOSTING_SERVICE"]]
+# except (KeyError, ValueError):
+#     raise ValueError(f"Invalid or missing GIT_HOSTING_SERVICE: Options: {list(GitHostingOption)}")
 
 try:
     MESSAGING_SERVICE = MessagingServiceOption[os.environ["MESSAGING_SERVICE"]]
