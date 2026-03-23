@@ -201,3 +201,9 @@ if ATLASSIAN_SUBNET or JIRA_API_TOKEN or JIRA_TAG_PATTERN_MATCHER or JIRA_TAG_EX
 
 # used to verify the bitbucket webhook payloads
 BITBUCKET_SECRET = os.environ.get('BITBUCKET_SECRET', None)
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
+
+STATIC_URL = "/static/"
