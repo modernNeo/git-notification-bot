@@ -62,7 +62,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bitbucket_webhook',
     'rest_framework',
-    'core'
+    'core',
+    'slack'
 ]
 
 MIDDLEWARE = [
