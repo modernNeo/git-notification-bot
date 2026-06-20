@@ -156,6 +156,12 @@ class JiraTagExtractionSource(Enum):
     DESCRIPTION = auto()
 
 
+# Keep these secrets inside your settings.py environment variables!
+SLACK_CLIENT_ID = get_secret("SLACK_CLIENT_ID", None)
+SLACK_CLIENT_SECRET = get_secret("SLACK_CLIENT_SECRET", None)
+REDIRECT_URI = "https://modernneo.com"
+
+
 # try:
 #     GIT_HOSTING_SERVICE = GitHostingOption[os.environ["GIT_HOSTING_SERVICE"]]
 # except (KeyError, ValueError):

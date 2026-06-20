@@ -18,8 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 
 from core.home_view import HomeView
+from slack.views.slack_callback_view import SlackCallbackView
+from slack.views.slack_install_view import SlackInstallView
 
 urlpatterns = [
+
+    path('slack/install/', SlackInstallView.as_view(), name='slack_install'),
+    path('slack', SlackCallbackView.as_view(), name='slack_callback'),  # Your root redirect endpoint
     path('', HomeView.as_view()),
     path('admin/', admin.site.urls),
     path('bitbucket/', include('bitbucket_webhook.urls'))
