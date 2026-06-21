@@ -41,7 +41,7 @@ class SlackCallbackView(View):
         }
         print(payload)
 
-        response = requests.post("https://slack.com", data=payload)
+        response = requests.post("https://slack.com/api/oauth.v2.access", data=payload)
         oauth_data = response.json()
 
         if not oauth_data.get("ok"):
