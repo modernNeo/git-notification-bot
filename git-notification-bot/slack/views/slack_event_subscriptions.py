@@ -31,16 +31,21 @@ class SlackEventSubscriptions(View):
 
         # 3. Handle actual Slack events
         event = body.get("event", {})
+        token = body.get("token")
+        # team_id = body.get("team_id")
+        # api_app_id = body.get("api_app_id")
+        # user = event.get("user")
+        # channel_id = event.get("channel")
 
         # When a user clicks into your App Home tab
         if event.get("type") == "app_home_opened":
             user_id = event.get("user")
-            self._publish_app_home(user_id)
+            self._publish_app_home(user_id, token)
 
         # Always return a 200 OK to acknowledge receipt of the event
         return HttpResponse(status=200)
 
-    def _publish_app_home(self, user_id):
+    def _publish_app_home(self, user_id, slack_token):
         """Pushes the initial Home Tab view containing your configuration button"""
         home_view = {
             "type": "home",
