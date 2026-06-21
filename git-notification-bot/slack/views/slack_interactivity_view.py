@@ -13,7 +13,10 @@ class SlackInteractivityView(View):
 
     def post(self, request, *args, **kwargs):
         log_request_data(request)
-        # Extract the URL-encoded payload string [1]
+
+        if request.POST.get("ssl_check") == "1":
+            return HttpResponse(status=200)
+
         raw_payload = request.POST.get("payload")
         if not raw_payload:
             return HttpResponse("Missing payload", status=400)
@@ -44,11 +47,15 @@ class SlackInteractivityView(View):
         action_id = actions[0].get("action_id")
 
         if action_id == "open_config_button":
-            trigger_id = payload["trigger_id"] # noqa F841
+            trigger_id = payload["trigger_id"]
 
             # Modal configuration scheme using Block Kit
             modal_view = {
-                "type": "home",
+                "type": "modal",
+                "title": {  # Modals require a title block
+                    "type": "plain_text",
+                    "text": "Settings"
+                },
                 "blocks": [
                     {
                         "type": "header",
@@ -159,7 +166,7 @@ class SlackInteractivityView(View):
                 ]
             }
 
-            self._call_slack_api("https://slack.com", modal_view)
+            self._call_slack_api("https://slack.com", {"trigger_id": trigger_id, "view": modal_view})
 
         return HttpResponse(status=200)
 
