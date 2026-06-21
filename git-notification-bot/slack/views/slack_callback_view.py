@@ -51,7 +51,7 @@ class SlackCallbackView(View):
         bot_token = oauth_data["access_token"]
         team_id = oauth_data["team"]["id"]
         team_name = oauth_data["team"]["name"]
-        enterprise_id = oauth_data.get("enterprise", {}).get("id")
+        enterprise_id = oauth_data["enterprise"]["id"] if oauth_data.get("enterprise") else None
 
         # 4. Save/Update record in your Django Database
         SlackInstallation.objects.update_or_create(
