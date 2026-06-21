@@ -159,7 +159,7 @@ class SlackEventSubscriptions(View):
             ]
         }
 
-        requests.post(
+        resp = requests.post(
             "https://slack.com/api/views.publish",
             headers={
                 "Authorization": f"Bearer {slack_token}", # noqa F821
@@ -170,6 +170,7 @@ class SlackEventSubscriptions(View):
                 "view": home_view
             }
         )
+        print(resp)
 
     def patch(self, request, *args, **kwargs):
         log_request_data(request)
