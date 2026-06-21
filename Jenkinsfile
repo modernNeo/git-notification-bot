@@ -25,7 +25,9 @@ pipeline {
                         string(credentialsId: 'GIT_NOTIFICATION_BOT_POSTGRES_USER', variable: 'POSTGRES_USER'),
                         string(credentialsId: 'GIT_NOTIFICATION_BOT_POSTGRES_PASSWORD', variable: 'POSTGRES_PASSWORD'),
                         string(credentialsId: 'GIT_NOTIFICATION_BOT_DATABASE_URL', variable: 'DATABASE_URL'),
-                        string(credentialsId: 'GIT_NOTIFICATION_BOT_DJANGO_ALLOWED_HOSTS', variable: 'DJANGO_ALLOWED_HOSTS')]) {
+                        string(credentialsId: 'GIT_NOTIFICATION_BOT_DJANGO_ALLOWED_HOSTS', variable: 'DJANGO_ALLOWED_HOSTS'),
+                        string(credentialsId: 'GIT_NOTIFICATION_BOT_SLACK_CLIENT_ID', variable: 'SLACK_CLIENT_ID'),
+                        string(credentialsId: 'GIT_NOTIFICATION_BOT_SLACK_CLIENT_SECRET', variable: 'SLACK_CLIENT_SECRET')]) {
                             sh '''
                             export POSTGRES_DB="${POSTGRES_DB}"
                             export POSTGRES_USER="${POSTGRES_USER}"
@@ -33,6 +35,8 @@ pipeline {
 
                             export DATABASE_URL="${DATABASE_URL}"
                             export DJANGO_ALLOWED_HOSTS="${DJANGO_ALLOWED_HOSTS}"
+                            export SLACK_CLIENT_ID="${SLACK_CLIENT_ID}"
+                            export SLACK_CLIENT_SECRET="${SLACK_CLIENT_SECRET}"
 
                             echo 'Deploying to production...'
                             # Ensure the script is executable and then run it

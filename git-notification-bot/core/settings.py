@@ -112,11 +112,7 @@ if DEVELOPMENT_MODE:
     }
 elif len(sys.argv) > 1 and sys.argv[1] != 'collectstatic':
     LOG_DIRECTORY = BASE_DIR
-    if get_secret('DATABASE_URL') is None:
-        raise Exception("DATABASE_URL environment variable not defined")
-    DATABASES = {
-        "default": dj_database_url.parse(get_secret('DATABASE_URL')),
-    }
+    DATABASES = {"default": dj_database_url.parse(get_secret('DATABASE_URL'))}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
