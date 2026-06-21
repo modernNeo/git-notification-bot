@@ -4,8 +4,10 @@ import requests
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
-from core.LogRequestData import log_request_data
 from django.views.decorators.csrf import csrf_exempt
+
+from core.LogRequestData import log_request_data
+from slack.models import SlackInstallation
 
 
 @method_decorator(csrf_exempt, name="dispatch")  # 3. Apply the exemption
@@ -30,17 +32,14 @@ class SlackEventSubscriptions(View):
             return JsonResponse({"challenge": body.get("challenge")})
 
         # 3. Handle actual Slack events
-        event = body.get("event", {})
-        token = body.get("token")
-        # team_id = body.get("team_id")
-        # api_app_id = body.get("api_app_id")
-        # user = event.get("user")
-        # channel_id = event.get("channel")
-
-        # When a user clicks into your App Home tab
-        if event.get("type") == "app_home_opened":
-            user_id = event.get("user")
-            self._publish_app_home(user_id, token)
+        team_id = body.get("team_id")
+        slack_team_obj = SlackInstallation.objects.filter(team_id=team_id).first()
+        if slack_team_obj:
+            event = body.get("event", {})
+            # When a user clicks into your App Home tab
+            if event.get("type") == "app_home_opened":
+                user_id = event.get("user")
+                self._publish_app_home(user_id, slack_team_obj.bot_token)
 
         # Always return a 200 OK to acknowledge receipt of the event
         return HttpResponse(status=200)
@@ -162,7 +161,7 @@ class SlackEventSubscriptions(View):
         resp = requests.post(
             "https://slack.com/api/views.publish",
             headers={
-                "Authorization": f"Bearer {slack_token}", # noqa F821
+                "Authorization": f"Bearer {slack_token}",  # noqa F821
                 "Content-Type": "application/json; charset=utf-8"
             },
             json={
