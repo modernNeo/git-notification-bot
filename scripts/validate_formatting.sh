@@ -27,7 +27,7 @@ mkdir -p "${LOCALHOST_TEST_DIR}"
 docker build --no-cache -t "${docker_test_image_lower_case}" -f Dockerfile.lint  .
 
 echo "Checking for environment file..."
-ENV_FILE="git_notification_bot.env"
+ENV_FILE="git_notification_bot_validate_formatting.env"
 echo "DEVELOPMENT_MODE=True" > "$ENV_FILE"
 declare -a ENV_ARGS=() # Initialize an empty array
 
