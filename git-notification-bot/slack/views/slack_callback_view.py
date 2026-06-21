@@ -49,20 +49,23 @@ class SlackCallbackView(View):
         if not oauth_data.get("ok"):
             return HttpResponse(f"Slack OAuth Error: {oauth_data.get('error')}", status=400)
 
-        # 3. Extract safe payload objects
+        app_id = oauth_data['app_id']
+        authed_user = oauth_data['authed_user']['id']
         bot_token = oauth_data["access_token"]
+        bot_user_id = oauth_data['bot_user_id']
         team_id = oauth_data["team"]["id"]
         team_name = oauth_data["team"]["name"]
         enterprise_id = oauth_data["enterprise"]["id"] if oauth_data.get("enterprise") else None
 
         # 4. Save/Update record in your Django Database
         SlackInstallation.objects.update_or_create(
+            app_id=app_id,
+            authed_user=authed_user,
+            bot_token=bot_token,
+            bot_user_id=bot_user_id,
             team_id=team_id,
-            defaults={
-                "bot_token": bot_token,
-                "team_name": team_name,
-                "enterprise_id": enterprise_id,
-            }
+            team_name=team_name,
+            enterprise_id=enterprise_id
         )
 
         return HttpResponse("Installation Successful! You can close this window and return to Slack.")
