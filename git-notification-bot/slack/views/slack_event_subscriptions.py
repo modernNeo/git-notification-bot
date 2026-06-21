@@ -169,7 +169,7 @@ class SlackEventSubscriptions(View):
                 "user_id": user_id,
                 "view": home_view
             }
-        )
+        ).json()
         print(resp)
 
     def patch(self, request, *args, **kwargs):
