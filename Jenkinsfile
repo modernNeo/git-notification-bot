@@ -6,8 +6,11 @@ pipeline {
 		stage('Validate Formatting') {
 			steps {
 				echo 'Checking code style and formatting...'
-				sh 'chmod +x ./scripts/validate_formatting.sh'
-				sh './scripts/validate_formatting.sh'
+				sh '''
+				    chmod +x ./scripts/validate_formatting.sh
+				    export DEVELOPMENT_MODE=True
+				    ./scripts/validate_formatting.sh
+				'''
 			}
 		}
 

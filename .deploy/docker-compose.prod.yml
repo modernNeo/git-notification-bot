@@ -14,7 +14,7 @@ services:  #Services that are needed for the git_slack_pr_bot app
             - DATABASE_URL
             - DJANGO_ALLOWED_HOSTS
         environment:
-            - DEVELOPMENT_MODE=True
+            - DEVELOPMENT_MODE=False
             - DEBUG=True
             - DATABASE_URL_FILE=/run/secrets/DATABASE_URL
             - DJANGO_ALLOWED_HOSTS_FILE=/run/secrets/DJANGO_ALLOWED_HOSTS
