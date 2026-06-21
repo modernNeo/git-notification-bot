@@ -160,7 +160,7 @@ class SlackEventSubscriptions(View):
         }
 
         requests.post(
-            "https://slack.com",
+            "https://slack.com/api/views.publish",
             headers={
                 "Authorization": f"Bearer {slack_token}", # noqa F821
                 "Content-Type": "application/json; charset=utf-8"
