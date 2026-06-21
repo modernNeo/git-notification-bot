@@ -39,6 +39,7 @@ class SlackCallbackView(View):
             "code": incoming_code,
             "redirect_uri": settings.ALLOWED_HOSTS[0] + "/slack"
         }
+        print(payload)
 
         response = requests.post("https://slack.com", data=payload)
         oauth_data = response.json()
