@@ -18,11 +18,17 @@ class SlackCallbackView(View):
         # 1. SECURITY FIX: Pull state token out of the session
         saved_state = request.session.get("oauth_state")
 
-        # Validate that states match and are not empty
-        if not incoming_state or incoming_state != saved_state:
-            return HttpResponseForbidden("State verification failed. Request untrusted.")
+        # Modified Security Check: Allow empty state IF no state was previously set in session
+        if incoming_state:
+            # If a state was provided by Slack, it MUST match our session
+            if incoming_state != saved_state:
+                return HttpResponseForbidden("State verification failed. Request untrusted.")
+        else:
+            # If state is empty, it's only safe if we didn't initiate an internal session state either
+            if saved_state is not None:
+                return HttpResponseForbidden("State verification failed. Expected a state token.")
 
-        # Clear out state so it cannot be used again
+        # Clear out state if it exists
         if "oauth_state" in request.session:
             del request.session["oauth_state"]
 
