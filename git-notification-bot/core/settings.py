@@ -30,6 +30,8 @@ def get_secret(secret_name, default=None):
         with open(secret_path, 'r') as f:
             # .strip() is CRITICAL because Docker/Echo often adds a newline (\n)
             return f.read().strip()
+    if not DEVELOPMENT_MODE:
+        raise Exception(f"Could not find secret file {secret_name}")
 
     # Fallback to standard Env Var (useful for local dev)
     return os.environ.get(secret_name, default)
