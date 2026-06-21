@@ -20,7 +20,7 @@ from django.urls import path, include
 from core.home_view import HomeView
 
 urlpatterns = [
-    path('slack', include("slack.urls")),
+    path('slack/', include("slack.urls")),
     path('', HomeView.as_view()),
     path('admin/', admin.site.urls),
     path('bitbucket/', include('bitbucket_webhook.urls'))
