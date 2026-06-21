@@ -59,13 +59,15 @@ class SlackCallbackView(View):
 
         # 4. Save/Update record in your Django Database
         SlackInstallation.objects.update_or_create(
-            app_id=app_id,
-            authed_user=authed_user,
-            bot_token=bot_token,
-            bot_user_id=bot_user_id,
-            team_id=team_id,
-            team_name=team_name,
-            enterprise_id=enterprise_id
+            team_id=team_id,  # Django searches the DB using ONLY this unique identifier
+            defaults={  # Django updates these values if found, or inserts them if new
+                "app_id": app_id,
+                "authed_user": authed_user,
+                "bot_token": bot_token,
+                "bot_user_id": bot_user_id,
+                "team_name": team_name,
+                "enterprise_id": enterprise_id,
+            }
         )
 
         return HttpResponse("Installation Successful! You can close this window and return to Slack.")
