@@ -37,7 +37,7 @@ class SlackCallbackView(View):
             "client_id": settings.SLACK_CLIENT_ID,
             "client_secret": settings.SLACK_CLIENT_SECRET,
             "code": incoming_code,
-            "redirect_uri": settings.REDIRECT_URI
+            "redirect_uri": settings.ALLOWED_HOSTS[0] + "/slack"
         }
 
         response = requests.post("https://slack.com", data=payload)

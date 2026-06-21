@@ -27,7 +27,7 @@ class SlackInstallView(View):
             f"https://slack.com"
             f"?client_id={settings.SLACK_CLIENT_ID}"
             f"&scope={SCOPES}"
-            f"&redirect_uri={settings.REDIRECT_URI}"
+            f"&redirect_uri={settings.ALLOWED_HOSTS[0] + "/slack"}"
             f"&state={state_token}"
         )
         return redirect(slack_url)

@@ -52,6 +52,8 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 
 ALLOWED_HOSTS = get_secret("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+if not DEVELOPMENT_MODE and len(ALLOWED_HOSTS) != 1:
+    raise Exception(f"more than 1 ALLOWED_HOSTS detected in PROD mode - {ALLOWED_HOSTS=}")
 
 # Application definition
 
@@ -162,8 +164,6 @@ class JiraTagExtractionSource(Enum):
 # Keep these secrets inside your settings.py environment variables!
 SLACK_CLIENT_ID = get_secret("SLACK_CLIENT_ID", None)
 SLACK_CLIENT_SECRET = get_secret("SLACK_CLIENT_SECRET", None)
-REDIRECT_URI = "https://modernneo.com"
-
 
 # try:
 #     GIT_HOSTING_SERVICE = GitHostingOption[os.environ["GIT_HOSTING_SERVICE"]]
