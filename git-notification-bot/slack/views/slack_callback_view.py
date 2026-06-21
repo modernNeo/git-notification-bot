@@ -43,6 +43,8 @@ class SlackCallbackView(View):
 
         response = requests.post("https://slack.com/api/oauth.v2.access", data=payload)
         oauth_data = response.json()
+        print(f"{response.headers}")
+        print(oauth_data)
 
         if not oauth_data.get("ok"):
             return HttpResponse(f"Slack OAuth Error: {oauth_data.get('error')}", status=400)
