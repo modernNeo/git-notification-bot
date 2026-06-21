@@ -102,6 +102,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+print(get_secret('DATABASE_URL'))
+
 if DEVELOPMENT_MODE:
     LOG_DIRECTORY = REPO_DIR
     DATABASES = {
