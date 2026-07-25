@@ -18,6 +18,7 @@
         },
         {
             "type": "input",
+            "block_id": "git_notification_bot_admins_block",
             "element": {
                 "type": "multi_users_select",
                 "placeholder": {
