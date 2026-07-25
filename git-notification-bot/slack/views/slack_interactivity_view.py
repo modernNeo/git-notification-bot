@@ -15,12 +15,7 @@ from slack.views.include_workspace_owners import include_workspace_owners
 class SlackInteractivityView(View):
 
     def post(self, request, *args, **kwargs):
-        team_id = request.body.get("team_id")
-        slack_team_obj = SlackInstallation.objects.filter(team_id=team_id).first()
         log_request_data(request)
-
-        if request.POST.get("ssl_check") == "1":
-            return HttpResponse(status=200)
 
         raw_payload = request.POST.get("payload")
         if not raw_payload:
@@ -30,6 +25,14 @@ class SlackInteractivityView(View):
             payload = json.loads(raw_payload)
         except json.JSONDecodeError:
             return HttpResponse("Invalid JSON", status=400)
+
+        if request.POST.get("ssl_check") == "1":
+            return HttpResponse(status=200)
+
+        team_id = payload.get("team_id")
+        slack_team_obj = SlackInstallation.objects.filter(team_id=team_id).first()
+        if slack_team_obj is None:
+            return HttpResponse(f"Invalid Team ID {team_id}", status=400)
 
         payload_type = payload.get("type")
 
@@ -55,9 +58,9 @@ class SlackInteractivityView(View):
             trigger_id = payload["trigger_id"]
 
             # Modal configuration scheme using Block Kit
-            app_config_json = json.load(open('slack/views/app_config.json', 'r', encoding='utf-8'))
+            app_config_json = include_workspace_owners(
+                json.load(open('slack/views/app_config.json', 'r', encoding='utf-8')), slack_team_obj)
             app_config_json['type'] = 'modal'
-            app_config_json = include_workspace_owners(app_config_json, slack_team_obj)
             admins_user_ids = get_bot_admins(slack_team_obj)  # noqa: F841
 
             self._call_slack_api("https://slack.com", {"trigger_id": trigger_id, "view": app_config_json})

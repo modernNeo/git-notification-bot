@@ -48,9 +48,9 @@ class SlackEventSubscriptions(View):
 
     def _publish_app_home(self, user_id, slack_team_obj: SlackInstallation):
         """Pushes the initial Home Tab view containing your configuration button"""
-        app_config_json = json.load(open('slack/views/app_config.json', 'r', encoding='utf-8'))
+        app_config_json = include_workspace_owners(
+            json.load(open('slack/views/app_config.json', 'r', encoding='utf-8')), slack_team_obj)
         app_config_json['type'] = 'home'
-        app_config_json = include_workspace_owners(app_config_json, slack_team_obj)
         admins_user_ids = get_bot_admins(slack_team_obj)  # noqa: F841
 
         resp = requests.post(
