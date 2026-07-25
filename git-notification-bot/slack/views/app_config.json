@@ -1,0 +1,147 @@
+{
+    "type": "modal",
+    "title": {
+        "type": "plain_text",
+        "text": "Settings"
+    },
+    "blocks": [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": "Bot Configurations",
+                "emoji": true
+            },
+            "level": 1
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "input",
+            "block_id": "git_notification_block_admin_block",
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "git_notification_block_admin_input"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Git Notification Bot Admins",
+                "emoji": true
+            },
+            "optional": true
+        },
+        {
+            "type": "input",
+            "element": {
+                "type": "multi_users_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Git Notification Bot Admins",
+                    "emoji": true
+                },
+                "action_id": "multi_users_select-action"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Git Notification Bot Admins",
+                "emoji": true
+            },
+            "optional": false
+        },
+        {
+            "type": "input",
+            "block_id": "atlassian_subnet_block",
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "atlassian_subnet_input"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Atlassian Subnet",
+                "emoji": true
+            },
+            "optional": true
+        },
+        {
+            "type": "input",
+            "block_id": "jira_token_block",
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "jira_token_input"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Jira API Token",
+                "emoji": true
+            },
+            "optional": true
+        },
+        {
+            "type": "input",
+            "block_id": "jira_source_block",
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "jira_source_input"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Jira Tag Extraction Source",
+                "emoji": true
+            },
+            "optional": true
+        },
+        {
+            "type": "input",
+            "block_id": "jira_pattern_block",
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "jira_pattern_input"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Jira Tag Pattern Matcher",
+                "emoji": true
+            },
+            "optional": true
+        },
+        {
+            "type": "input",
+            "block_id": "bitbucket_secret_block",
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "bitbucket_secret_input"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Bitbucket Secret",
+                "emoji": true
+            },
+            "optional": true
+        },
+        {
+            "type": "actions",
+            "block_id": "config_footer_buttons",
+            "elements": [
+                {
+                    "type": "button",
+                    "action_id": "app_home_submit_settings",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Save Changes"
+                    },
+                    "style": "primary"
+                },
+                {
+                    "type": "button",
+                    "action_id": "app_home_cancel_settings",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Reset Form"
+                    },
+                    "style": "danger"
+                }
+            ]
+        }
+    ]
+}
