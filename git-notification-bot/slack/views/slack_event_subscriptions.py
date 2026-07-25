@@ -52,6 +52,7 @@ class SlackEventSubscriptions(View):
             json.load(open('slack/views/app_config.json', 'r', encoding='utf-8')), slack_team_obj)
         app_config_json['type'] = 'home'
         admins_user_ids = get_bot_admins(slack_team_obj)  # noqa: F841
+        print(admins_user_ids)
 
         resp = requests.post(
             "https://slack.com/api/views.publish",

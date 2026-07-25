@@ -30,7 +30,7 @@
             },
             "label": {
                 "type": "plain_text",
-                "text": "Git Notification Bot Admins",
+                "text": "Git Notification Bot Admins\nIn addition to workspace admins: ",
                 "emoji": true
             },
             "optional": false

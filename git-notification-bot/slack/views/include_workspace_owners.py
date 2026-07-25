@@ -11,8 +11,7 @@ def include_workspace_owners(app_config_json, slack_team_obj: SlackInstallation)
         if element.get('action_id') == 'git_notification_bot_admins':
             # Convert the input block into a read-only section block
             label = block.get('label', {})
-            placeholder_text = label.get('text', 'Git Notification Bot Admins')
-            label['text'] = f"{placeholder_text}\nIn addition to workspace admins: {admin_mentions}"
+            label['text'] = f"{label.get('text', 'Git Notification Bot Admins')}{admin_mentions}"
             block['label'] = label
             break
 

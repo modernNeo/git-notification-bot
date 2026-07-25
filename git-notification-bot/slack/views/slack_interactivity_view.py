@@ -17,45 +17,30 @@ class SlackInteractivityView(View):
     def post(self, request, *args, **kwargs):
         log_request_data(request)
 
-        print(1)
         raw_payload = request.POST.get("payload")
-        print(2)
         if not raw_payload:
-            print(3)
             return HttpResponse("Missing payload", status=400)
 
         try:
-            print(4)
             payload = json.loads(raw_payload)
-            print(5)
         except json.JSONDecodeError:
-            print(6)
             return HttpResponse("Invalid JSON", status=400)
 
-        print(7)
         if request.POST.get("ssl_check") == "1":
-            print(8)
             return HttpResponse(status=200)
 
-        print(9)
         team_id = payload.get("team").get("id")
         slack_team_obj = SlackInstallation.objects.filter(team_id=team_id).first()
-        print(10)
         if slack_team_obj is None:
-            print(11)
             return HttpResponse(f"Invalid Team ID {team_id}", status=400)
 
-        print(12)
         payload_type = payload.get("type")
 
         # Route to specific internal class handlers based on interaction type [1]
-        print(13)
         if payload_type == "block_actions":
-            print(14)
             return self._handle_block_actions(payload, slack_team_obj)
 
         elif payload_type == "view_submission":
-            print(15)
             return self._handle_view_submission(payload)
 
         return HttpResponse(status=200)
