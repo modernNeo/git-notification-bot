@@ -38,7 +38,7 @@ class SlackInteractivityView(View):
             return HttpResponse(status=200)
 
         print(9)
-        team_id = payload.get("team_id")
+        team_id = payload.get("team").get("id")
         slack_team_obj = SlackInstallation.objects.filter(team_id=team_id).first()
         print(10)
         if slack_team_obj is None:
