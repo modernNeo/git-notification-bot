@@ -26,11 +26,11 @@
                     "text": "Select custom bot admins",
                     "emoji": true
                 },
-                "action_id": "git_notification_bot_admins"
+                "action_id": "git_notification_bot_admin_input"
             },
             "label": {
                 "type": "plain_text",
-                "text": "Git Notification Bot Admins\nIn addition to workspace admins: ",
+                "text": "Bot Admins\nIn addition to workspace admins: ",
                 "emoji": true
             },
             "optional": false

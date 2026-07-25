@@ -1,5 +1,6 @@
 import json
 
+import requests
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -58,14 +59,8 @@ class SlackInteractivityView(View):
             return HttpResponse(status=200)
 
         if action_id == 'app_home_submit_settings':
-            view = payload.get("view", {})
-            state = view.get("state", {})
-            values = state.get("values", {})
-            git_notification_bot_admins_block = values.get("git_notification_bot_admins_block", {})
-            git_notification_bot_admins = git_notification_bot_admins_block.get("git_notification_bot_admins", {})
-
+            selected_users = self._get_selected_users(payload)
             workspace_owners = attempt_slack_query_for_workspace_owners(slack_team_obj)
-            selected_users = git_notification_bot_admins.get("selected_users", [])
             selected_users = [
                 selected_user
                 for selected_user in selected_users
@@ -98,11 +93,46 @@ class SlackInteractivityView(View):
                 message = " ".join([f"deleted {admin}\n" for admin in deleted_admins])
                 print(f"{message}")
                 deleted_admins.delete()
+
+            (
+                slack_team_obj.atlassian_subnet,
+                slack_team_obj.atlassian_cloud_id
+            ) = self._get_selected_atlassian_subnet(payload)
+            print(slack_team_obj.atlassian_subnet)
+            print(slack_team_obj.atlassian_cloud_id)
+            slack_team_obj.save()
             SlackEventSubscriptions.publish_app_home(user_id, slack_team_obj)
         else:
             return HttpResponse("unsupported action_id", status=400)
 
         return HttpResponse(status=200)
+
+    def _get_selected_users(self, payload):
+        view = payload.get("view", {})
+        state = view.get("state", {})
+        values = state.get("values", {})
+        git_notification_bot_admins_block = values.get("git_notification_bot_admins_block", {})
+        git_notification_bot_admin_input = git_notification_bot_admins_block.get(
+            "git_notification_bot_admin_input", {})
+        return git_notification_bot_admin_input.get("selected_users", [])
+
+    def _get_selected_atlassian_subnet(self, payload):
+        view = payload.get("view", {})
+        state = view.get("state", {})
+        values = state.get("values", {})
+        atlassian_subnet_block = values.get("atlassian_subnet_block", {})
+        atlassian_subnet_input = atlassian_subnet_block.get("atlassian_subnet_input", {})
+        selected_atlassian_subnet = atlassian_subnet_input.get("value", "")
+        selected_atlassian_cloud_id = None
+        if len(selected_atlassian_subnet) > 0:
+            tenant_url = f"https://{selected_atlassian_subnet}.atlassian.net/_edge/tenant_info"
+            response = requests.get(tenant_url)
+            if response.status_code == 200:
+                selected_atlassian_cloud_id = response.json()['cloudId']
+            else:
+                selected_atlassian_subnet = ""
+                selected_atlassian_cloud_id = None
+        return selected_atlassian_subnet, selected_atlassian_cloud_id
 
     def _handle_view_submission(self, payload):
         """Fires when the user clicks 'Save' on the interactive modal"""

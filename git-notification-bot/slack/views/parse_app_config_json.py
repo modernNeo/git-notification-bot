@@ -15,11 +15,14 @@ def parse_app_config_json(slack_team_obj: SlackInstallation):
 
     for block in app_config.get('blocks', []):
         element = block.get('element', {})
-        if element.get('action_id') == 'git_notification_bot_admins':
+        if element.get('action_id') == 'git_notification_bot_admin_input':
             label = block.get('label', {})
             label_text = label.get('text', 'Git Notification Bot Admins')
             label['text'] = f"{label_text}{workspace_owner_mentions}"
             block['label'] = label
             element['initial_users'] = list(get_custom_bot_admins(slack_team_obj))
             print(block)
+        elif element.get('action_id') == 'atlassian_subnet_input':
+            element['initial_value'] = slack_team_obj.atlassian_subnet
+
     return app_config

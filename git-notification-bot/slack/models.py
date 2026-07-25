@@ -12,6 +12,17 @@ class SlackInstallation(models.Model):
         max_length=50, blank=True, null=True, help_text="Slack Enterprise Grid ID (starts with E)")
     installed_at = models.DateTimeField(auto_now=True)
 
+    atlassian_subnet = models.CharField(max_length=255, blank=True, null=True)
+    atlassian_cloud_id = models.CharField(max_length=255, blank=True, null=True)
+    # jira_api_token = models.CharField(max_length=255, blank=True, null=True)
+    # jira_tag_extraction_source = models.CharField(max_length=255, blank=True, null=True)
+    # # branch name
+    # # PR Title
+    # # PR description
+    #
+    # jira_tag_pattern_matcher = models.CharField(max_length=255, blank=True, null=True)
+    # bitbucket_secret = models.CharField(max_length=255, blank=True, null=True)
+
     def __str__(self):
         return f"{self.team_name or self.team_id}"
 
