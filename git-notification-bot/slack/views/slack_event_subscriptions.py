@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from core.LogRequestData import log_request_data
 from slack.models import SlackInstallation
+from slack.views.get_bot_admins import get_bot_admins
+from slack.views.include_workspace_owners import include_workspace_owners
 
 
 @method_decorator(csrf_exempt, name="dispatch")  # 3. Apply the exemption
@@ -39,25 +41,27 @@ class SlackEventSubscriptions(View):
             # When a user clicks into your App Home tab
             if event.get("type") == "app_home_opened":
                 user_id = event.get("user")
-                self._publish_app_home(user_id, slack_team_obj.bot_token)
+                self._publish_app_home(user_id, slack_team_obj)
 
         # Always return a 200 OK to acknowledge receipt of the event
         return HttpResponse(status=200)
 
-    def _publish_app_home(self, user_id, slack_token):
+    def _publish_app_home(self, user_id, slack_team_obj: SlackInstallation):
         """Pushes the initial Home Tab view containing your configuration button"""
-        home_view = json.load(open('slack/views/app_config.json', 'r', encoding='utf-8'))
-        home_view['type'] = 'home'
+        app_config_json = json.load(open('slack/views/app_config.json', 'r', encoding='utf-8'))
+        app_config_json['type'] = 'home'
+        app_config_json = include_workspace_owners(app_config_json, slack_team_obj)
+        admins_user_ids = get_bot_admins(slack_team_obj)  # noqa: F841
 
         resp = requests.post(
             "https://slack.com/api/views.publish",
             headers={
-                "Authorization": f"Bearer {slack_token}",  # noqa F821
+                "Authorization": f"Bearer {slack_team_obj.bot_token}",  # noqa F821
                 "Content-Type": "application/json; charset=utf-8"
             },
             json={
                 "user_id": user_id,
-                "view": home_view
+                "view": app_config_json
             }
         ).json()
         print(resp)

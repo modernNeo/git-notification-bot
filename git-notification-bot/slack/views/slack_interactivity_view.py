@@ -6,12 +6,17 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from core.LogRequestData import log_request_data
+from slack.models import SlackInstallation
+from slack.views.get_bot_admins import get_bot_admins
+from slack.views.include_workspace_owners import include_workspace_owners
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SlackInteractivityView(View):
 
     def post(self, request, *args, **kwargs):
+        team_id = request.body.get("team_id")
+        slack_team_obj = SlackInstallation.objects.filter(team_id=team_id).first()
         log_request_data(request)
 
         if request.POST.get("ssl_check") == "1":
@@ -30,14 +35,14 @@ class SlackInteractivityView(View):
 
         # Route to specific internal class handlers based on interaction type [1]
         if payload_type == "block_actions":
-            return self._handle_block_actions(payload)
+            return self._handle_block_actions(payload, slack_team_obj)
 
         elif payload_type == "view_submission":
             return self._handle_view_submission(payload)
 
         return HttpResponse(status=200)
 
-    def _handle_block_actions(self, payload):
+    def _handle_block_actions(self, payload, slack_team_obj: SlackInstallation):
         """Fires when the owner clicks the configuration button in App Home"""
         # Slack wraps actions in a list [1]
         actions = payload.get("actions", [])
@@ -50,10 +55,12 @@ class SlackInteractivityView(View):
             trigger_id = payload["trigger_id"]
 
             # Modal configuration scheme using Block Kit
-            modal_view = json.load(open('slack/views/app_config.json', 'r', encoding='utf-8'))
-            modal_view['type'] = 'modal'
+            app_config_json = json.load(open('slack/views/app_config.json', 'r', encoding='utf-8'))
+            app_config_json['type'] = 'modal'
+            app_config_json = include_workspace_owners(app_config_json, slack_team_obj)
+            admins_user_ids = get_bot_admins(slack_team_obj)  # noqa: F841
 
-            self._call_slack_api("https://slack.com", {"trigger_id": trigger_id, "view": modal_view})
+            self._call_slack_api("https://slack.com", {"trigger_id": trigger_id, "view": app_config_json})
 
         return HttpResponse(status=200)
 

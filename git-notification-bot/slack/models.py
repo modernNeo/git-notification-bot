@@ -14,3 +14,16 @@ class SlackInstallation(models.Model):
 
     def __str__(self):
         return f"{self.team_name or self.team_id}"
+
+
+class CustomWorkspaceAdmin(models.Model):
+    user_id = models.CharField(max_length=255, help_text="Admin's User ID")
+    workspace = models.ForeignKey(
+        SlackInstallation,
+        on_delete=models.CASCADE,
+        related_name="admins",
+        help_text="The Slack workspace this admin belongs to"
+    )
+
+    def __str__(self):
+        return f"Admin {self.user_id} for {self.workspace}"
