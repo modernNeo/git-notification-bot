@@ -8,8 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from core.LogRequestData import log_request_data
 from slack.models import SlackInstallation
-from slack.views.get_bot_admins import get_bot_admins
-from slack.views.include_workspace_owners import include_workspace_owners
+from slack.views.include_custom_workspace_owners_for_initials_list import \
+    include_custom_workspace_owners_for_initials_list
 
 
 @method_decorator(csrf_exempt, name="dispatch")  # 3. Apply the exemption
@@ -48,16 +48,14 @@ class SlackEventSubscriptions(View):
 
     def _publish_app_home(self, user_id, slack_team_obj: SlackInstallation):
         """Pushes the initial Home Tab view containing your configuration button"""
-        app_config_json = include_workspace_owners(
+        app_config_json = include_custom_workspace_owners_for_initials_list(
             json.load(open('slack/views/app_config.json', 'r', encoding='utf-8')), slack_team_obj)
         app_config_json['type'] = 'home'
-        admins_user_ids = get_bot_admins(slack_team_obj)  # noqa: F841
-        print(admins_user_ids)
 
         resp = requests.post(
             "https://slack.com/api/views.publish",
             headers={
-                "Authorization": f"Bearer {slack_team_obj.bot_token}",  # noqa F821
+                "Authorization": f"Bearer {slack_team_obj.bot_token}",
                 "Content-Type": "application/json; charset=utf-8"
             },
             json={

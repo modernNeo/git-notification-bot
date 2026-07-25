@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from core.LogRequestData import log_request_data
 from slack.models import SlackInstallation, CustomWorkspaceAdmin
 from slack.views.get_bot_admins import get_bot_admins
-from slack.views.include_workspace_owners import include_workspace_owners
+from slack.views.include_workspace_owners_in_text import include_workspace_owners_in_text
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -58,7 +58,7 @@ class SlackInteractivityView(View):
             trigger_id = payload["trigger_id"]
 
             # Modal configuration scheme using Block Kit
-            app_config_json = include_workspace_owners(
+            app_config_json = include_workspace_owners_in_text(
                 json.load(open('slack/views/app_config.json', 'r', encoding='utf-8')), slack_team_obj)
             app_config_json['type'] = 'modal'
             admins_user_ids = get_bot_admins(slack_team_obj)  # noqa: F841
