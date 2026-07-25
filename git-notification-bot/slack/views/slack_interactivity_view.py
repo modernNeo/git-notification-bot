@@ -1,14 +1,14 @@
 import json
-import requests
+
 from django.http import HttpResponse, JsonResponse
-from django.views import View
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from core.LogRequestData import log_request_data
-from slack.models import SlackInstallation, CustomWorkspaceAdmin
-from slack.views.get_bot_admins import get_bot_admins
-from slack.views.include_workspace_owners_in_text import include_workspace_owners_in_text
+from core.log_request_data import log_request_data
+from slack.models import SlackInstallation, BotWorkspaceAdmin
+from slack.views.bot_workspace_admin_queries import attempt_slack_query_for_workspace_owners, get_custom_bot_admins
+from slack.views.slack_event_subscriptions import SlackEventSubscriptions
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -49,40 +49,58 @@ class SlackInteractivityView(View):
         """Fires when the owner clicks the configuration button in App Home"""
         # Slack wraps actions in a list [1]
         actions = payload.get("actions", [])
+        action = actions[0]
+        action_id = action.get("action_id")
+
+        user = payload.get("user", {})
+        user_id = user.get("id", None)
         if not actions:
             return HttpResponse(status=200)
 
-        action_id = actions[0].get("action_id")
-
-        if action_id == "open_config_button":
-            trigger_id = payload["trigger_id"]
-
-            # Modal configuration scheme using Block Kit
-            app_config_json = include_workspace_owners_in_text(
-                json.load(open('slack/views/app_config.json', 'r', encoding='utf-8')), slack_team_obj)
-            app_config_json['type'] = 'modal'
-            admins_user_ids = get_bot_admins(slack_team_obj)  # noqa: F841
-
-            self._call_slack_api("https://slack.com", {"trigger_id": trigger_id, "view": app_config_json})
-        elif action_id == 'app_home_submit_settings':
+        if action_id == 'app_home_submit_settings':
             view = payload.get("view", {})
             state = view.get("state", {})
             values = state.get("values", {})
             git_notification_bot_admins_block = values.get("git_notification_bot_admins_block", {})
             git_notification_bot_admins = git_notification_bot_admins_block.get("git_notification_bot_admins", {})
-            admins_user_ids = get_bot_admins(slack_team_obj)
-            selected_users_ids = [
-                user_id for user_id in git_notification_bot_admins.get("selected_users", [])
-                if user_id not in admins_user_ids
-            ]
-            admins = [
-                CustomWorkspaceAdmin(user_id=selected_users_id, workspace=slack_team_obj)
-                for selected_users_id in selected_users_ids
+
+            workspace_owners = attempt_slack_query_for_workspace_owners(slack_team_obj)
+            selected_users = git_notification_bot_admins.get("selected_users", [])
+            selected_users = [
+                selected_user
+                for selected_user in selected_users
+                if selected_user not in workspace_owners
             ]
 
-            # Bulk save to the database, ignoring duplicates
-            CustomWorkspaceAdmin.objects.bulk_create(admins, ignore_conflicts=True)
-            print(f"saved {admins}")
+            current_admins_user_ids = list(get_custom_bot_admins(slack_team_obj))
+
+            new_users_ids = [
+                user_id for user_id in selected_users
+                if user_id not in current_admins_user_ids
+            ]
+            new_admins = [
+                BotWorkspaceAdmin(user_id=selected_users_id, workspace=slack_team_obj)
+                for selected_users_id in new_users_ids
+            ]
+
+            users_to_delete = [
+                current_admin
+                for current_admin in current_admins_user_ids
+                if current_admin not in selected_users
+            ]
+
+            if len(new_admins) > 0:
+                message = " ".join([f"saved {admin}\n" for admin in new_admins])
+                print(f"{message}")
+                BotWorkspaceAdmin.objects.bulk_create(new_admins, ignore_conflicts=True)
+            deleted_admins = BotWorkspaceAdmin.objects.filter(user_id__in=users_to_delete)
+            if len(deleted_admins) > 0:
+                message = " ".join([f"deleted {admin}\n" for admin in deleted_admins])
+                print(f"{message}")
+                deleted_admins.delete()
+            SlackEventSubscriptions.publish_app_home(user_id, slack_team_obj)
+        else:
+            return HttpResponse("unsupported action_id", status=400)
 
         return HttpResponse(status=200)
 
@@ -114,15 +132,6 @@ class SlackInteractivityView(View):
 
         return HttpResponse(status=200)
 
-    def _call_slack_api(self, url, json_data):
-        """Network helper to post back to Slack API network routers [1]"""
-        headers = {
-            "Authorization": f"Bearer {self.SLACK_BOT_TOKEN}",
-            "Content-Type": "application/json; charset=utf-8"
-        }
-        response = requests.post(url, json=json_data, headers=headers)
-        return response.json()
-
     def _save_to_database(self, workspace_id, configuration_value):
         """Placeholder for updating your custom Django Model fields"""
         try:
@@ -134,3 +143,15 @@ class SlackInteractivityView(View):
             return True
         except Exception:
             return False
+
+    def patch(self, request, *args, **kwargs):
+        log_request_data(request)
+        return HttpResponse("PATCH SlackInteractivityView.")
+
+    def put(self, request, *args, **kwargs):
+        log_request_data(request)
+        return HttpResponse("PUT SlackInteractivityView.")
+
+    def get(self, request):
+        log_request_data(request)
+        return HttpResponse("GET SlackInteractivityView.")

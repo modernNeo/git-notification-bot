@@ -6,10 +6,9 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from core.LogRequestData import log_request_data
+from core.log_request_data import log_request_data
 from slack.models import SlackInstallation
-from slack.views.include_custom_workspace_owners_for_initials_list import \
-    include_custom_workspace_owners_for_initials_list
+from slack.views.parse_app_config_json import parse_app_config_json
 
 
 @method_decorator(csrf_exempt, name="dispatch")  # 3. Apply the exemption
@@ -41,15 +40,15 @@ class SlackEventSubscriptions(View):
             # When a user clicks into your App Home tab
             if event.get("type") == "app_home_opened":
                 user_id = event.get("user")
-                self._publish_app_home(user_id, slack_team_obj)
+                self.publish_app_home(user_id, slack_team_obj)
 
         # Always return a 200 OK to acknowledge receipt of the event
         return HttpResponse(status=200)
 
-    def _publish_app_home(self, user_id, slack_team_obj: SlackInstallation):
+    @staticmethod
+    def publish_app_home(user_id, slack_team_obj: SlackInstallation):
         """Pushes the initial Home Tab view containing your configuration button"""
-        app_config_json = include_custom_workspace_owners_for_initials_list(
-            json.load(open('slack/views/app_config.json', 'r', encoding='utf-8')), slack_team_obj)
+        app_config_json = parse_app_config_json(slack_team_obj)
         app_config_json['type'] = 'home'
 
         resp = requests.post(
@@ -63,7 +62,8 @@ class SlackEventSubscriptions(View):
                 "view": app_config_json
             }
         ).json()
-        print(resp)
+        if (resp.get("ok") is False):
+            print(resp)
 
     def patch(self, request, *args, **kwargs):
         log_request_data(request)

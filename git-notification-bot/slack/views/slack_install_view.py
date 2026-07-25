@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views import View
 
-from core.LogRequestData import log_request_data
+from core.log_request_data import log_request_data
 
 # Keep these secrets inside your settings.py environment variables!
 SCOPES = "chat:write,commands"

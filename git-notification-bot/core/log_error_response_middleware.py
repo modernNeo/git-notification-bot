@@ -5,10 +5,8 @@ class LogErrorResponseMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
 
-        # If it's an error response, print or log the body content automatically
-        if response.status_code >= 400:
-            content = getattr(response, 'content', b'').decode('utf-8', errors='ignore')
-            print(f"\n[!]. Response {response.status_code} for {request.path}")
-            print(f"Content: {content}\n")
+        content = getattr(response, 'content', b'').decode('utf-8', errors='ignore')
+        print(f"\n[!]. Response {response.status_code} for {request.path}")
+        print(f"Content: {content}\n")
 
         return response

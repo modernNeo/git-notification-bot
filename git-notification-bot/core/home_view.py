@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
-from core.LogRequestData import log_request_data
+from core.log_request_data import log_request_data
 
 
 class HomeView(TemplateView):

@@ -3,7 +3,7 @@ from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponse
 from django.views import View
 
-from core.LogRequestData import log_request_data
+from core.log_request_data import log_request_data
 from slack.models import SlackInstallation
 
 
