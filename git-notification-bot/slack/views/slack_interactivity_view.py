@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from core.LogRequestData import log_request_data
-from slack.models import SlackInstallation
+from slack.models import SlackInstallation, CustomWorkspaceAdmin
 from slack.views.get_bot_admins import get_bot_admins
 from slack.views.include_workspace_owners import include_workspace_owners
 
@@ -17,30 +17,45 @@ class SlackInteractivityView(View):
     def post(self, request, *args, **kwargs):
         log_request_data(request)
 
+        print(1)
         raw_payload = request.POST.get("payload")
+        print(2)
         if not raw_payload:
+            print(3)
             return HttpResponse("Missing payload", status=400)
 
         try:
+            print(4)
             payload = json.loads(raw_payload)
+            print(5)
         except json.JSONDecodeError:
+            print(6)
             return HttpResponse("Invalid JSON", status=400)
 
+        print(7)
         if request.POST.get("ssl_check") == "1":
+            print(8)
             return HttpResponse(status=200)
 
+        print(9)
         team_id = payload.get("team_id")
         slack_team_obj = SlackInstallation.objects.filter(team_id=team_id).first()
+        print(10)
         if slack_team_obj is None:
+            print(11)
             return HttpResponse(f"Invalid Team ID {team_id}", status=400)
 
+        print(12)
         payload_type = payload.get("type")
 
         # Route to specific internal class handlers based on interaction type [1]
+        print(13)
         if payload_type == "block_actions":
+            print(14)
             return self._handle_block_actions(payload, slack_team_obj)
 
         elif payload_type == "view_submission":
+            print(15)
             return self._handle_view_submission(payload)
 
         return HttpResponse(status=200)
@@ -64,6 +79,25 @@ class SlackInteractivityView(View):
             admins_user_ids = get_bot_admins(slack_team_obj)  # noqa: F841
 
             self._call_slack_api("https://slack.com", {"trigger_id": trigger_id, "view": app_config_json})
+        elif action_id == 'app_home_submit_settings':
+            view = payload.get("view", {})
+            state = view.get("state", {})
+            values = state.get("values", {})
+            git_notification_bot_admins_block = values.get("git_notification_bot_admins_block", {})
+            git_notification_bot_admins = git_notification_bot_admins_block.get("git_notification_bot_admins", {})
+            admins_user_ids = get_bot_admins(slack_team_obj)
+            selected_users_ids = [
+                user_id for user_id in git_notification_bot_admins.get("selected_users", [])
+                if user_id not in admins_user_ids
+            ]
+            admins = [
+                CustomWorkspaceAdmin(user_id=selected_users_id, workspace=slack_team_obj)
+                for selected_users_id in selected_users_ids
+            ]
+
+            # Bulk save to the database, ignoring duplicates
+            CustomWorkspaceAdmin.objects.bulk_create(admins, ignore_conflicts=True)
+            print(f"saved {admins}")
 
         return HttpResponse(status=200)
 

@@ -25,5 +25,10 @@ class CustomWorkspaceAdmin(models.Model):
         help_text="The Slack workspace this admin belongs to"
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user_id', 'workspace'], name='unique_workspace_admin')
+        ]
+
     def __str__(self):
         return f"Admin {self.user_id} for {self.workspace}"
