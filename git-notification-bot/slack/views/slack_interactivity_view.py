@@ -51,6 +51,7 @@ class SlackInteractivityView(View):
 
             # Modal configuration scheme using Block Kit
             modal_view = json.load(open('slack/views/app_config.json', 'r', encoding='utf-8'))
+            modal_view['type'] = 'modal'
 
             self._call_slack_api("https://slack.com", {"trigger_id": trigger_id, "view": modal_view})
 
