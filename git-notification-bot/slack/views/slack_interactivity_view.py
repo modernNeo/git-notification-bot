@@ -71,6 +71,38 @@ class SlackInteractivityView(View):
                     },
                     {
                         "type": "input",
+                        "block_id": "git_notification_block_admin_block",
+                        "element": {
+                            "type": "plain_text_input",
+                            "action_id": "git_notification_block_admin_input"
+                        },
+                        "label": {
+                            "type": "plain_text",
+                            "text": "Git Notification Bot Admins",
+                            "emoji": True
+                        },
+                        "optional": True
+                    },
+                    {
+                        "type": "input",
+                        "element": {
+                            "type": "multi_users_select",
+                            "placeholder": {
+                                "type": "plain_text",
+                                "text": "Git Notification Bot Admins",
+                                "emoji": True
+                            },
+                            "action_id": "multi_users_select-action"
+                        },
+                        "label": {
+                            "type": "plain_text",
+                            "text": "Git Notification Bot Admins",
+                            "emoji": True
+                        },
+                        "optional": False
+                    },
+                    {
+                        "type": "input",
                         "block_id": "atlassian_subnet_block",
                         "element": {
                             "type": "plain_text_input",

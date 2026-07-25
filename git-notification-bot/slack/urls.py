@@ -8,6 +8,7 @@ from slack.views.slack_interactivity_view import SlackInteractivityView
 urlpatterns = [
     path('', SlackCallbackView.as_view(), name='slack_callback'),  # Your root redirect endpoint
     path('install', SlackInstallView.as_view(), name='slack_install'),
-    path('event_subscriptions', SlackEventSubscriptions.as_view(), name="event_subscriptions"),
-    path("interactivity", SlackInteractivityView.as_view(), name="interactivity"),
+    path('event_subscriptions', SlackEventSubscriptions.as_view(), name="event_subscriptions"),  # API used by
+    # slack to populate the app home
+    path("interactivity", SlackInteractivityView.as_view(), name="interactivity"),  # user input for app home
 ]
