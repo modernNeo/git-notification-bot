@@ -64,6 +64,10 @@ def query_db_for_workspace_owners(slack_team_obj: SlackInstallation):
     )
 
 
+def get_all_bot_admins(slack_team_obj: SlackInstallation):
+    return list(slack_team_obj.admins.values_list('user_id', flat=True))
+
+
 def get_custom_bot_admins(slack_team_obj: SlackInstallation):
     return list(
         slack_team_obj.admins.filter(

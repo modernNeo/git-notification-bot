@@ -48,7 +48,7 @@ class SlackEventSubscriptions(View):
     @staticmethod
     def publish_app_home(user_id, slack_team_obj: SlackInstallation):
         """Pushes the initial Home Tab view containing your configuration button"""
-        app_config_json = parse_app_config_json(slack_team_obj)
+        app_config_json = parse_app_config_json(slack_team_obj, user_id)
         app_config_json['type'] = 'home'
 
         resp = requests.post(

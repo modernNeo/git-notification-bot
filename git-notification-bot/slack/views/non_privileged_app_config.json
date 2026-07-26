@@ -1,0 +1,44 @@
+{
+    "title": {
+        "type": "plain_text",
+        "text": "Settings"
+    },
+    "blocks": [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": "Bot Configurations",
+                "emoji": true
+            },
+            "level": 1
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "actions",
+            "block_id": "config_footer_buttons",
+            "elements": [
+                {
+                    "type": "button",
+                    "action_id": "app_home_submit_settings",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Send Access Request from Workspace Owner"
+                    },
+                    "style": "primary"
+                },
+                {
+                    "type": "button",
+                    "action_id": "app_home_cancel_settings",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Cancel Request"
+                    },
+                    "style": "danger"
+                }
+            ]
+        }
+    ]
+}
