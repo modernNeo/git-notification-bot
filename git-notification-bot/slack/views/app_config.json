@@ -64,18 +64,47 @@
             "optional": true
         },
         {
-            "type": "input",
-            "block_id": "jira_source_block",
-            "element": {
-                "type": "plain_text_input",
-                "action_id": "jira_source_input"
+            "type": "section",
+            "block_id": "jira_tag_extraction_source_block",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*Jira Tag Extraction Source*"
             },
-            "label": {
-                "type": "plain_text",
-                "text": "Jira Tag Extraction Source",
-                "emoji": true
-            },
-            "optional": true
+            "accessory": {
+                "action_id" : "jira_tag_extraction_source_input",
+                "type": "static_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Select Pull Request Tag Source",
+                    "emoji": true
+                },
+                "options": [
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Branch Name",
+                            "emoji": true
+                        },
+                        "value": "Branch Name"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Pull Request Title",
+                            "emoji": true
+                        },
+                        "value": "Pull Request Title"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Pull Request Description",
+                            "emoji": true
+                        },
+                        "value": "Pull Request Description"
+                    }
+                ]
+            }
         },
         {
             "type": "input",

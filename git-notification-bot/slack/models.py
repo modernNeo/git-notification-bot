@@ -14,7 +14,8 @@ class SlackInstallation(models.Model):
 
     atlassian_subnet = models.CharField(max_length=255, blank=True, null=True)
     atlassian_cloud_id = models.CharField(max_length=255, blank=True, null=True)
-    # jira_api_token = models.CharField(max_length=255, blank=True, null=True)
+    jira_api_token = models.CharField(max_length=255, blank=True, null=True)
+
     # jira_tag_extraction_source = models.CharField(max_length=255, blank=True, null=True)
     # # branch name
     # # PR Title
@@ -35,12 +36,15 @@ class BotWorkspaceAdmin(models.Model):
         related_name="admins",
         help_text="The Slack workspace this admin belongs to"
     )
-    primary_workspace_owner = models.BooleanField(default=False, help_text="""
-    They hold the absolute highest level of permissions. In addition to having all the same administrative \
-    capabilities as a regular Workspace Owner, only the Primary Owner can delete the workspace or transfer \
-    primary ownership to another member.
-    There can only be one Workspace Primary Owner per workspace.
-    """)
+    primary_workspace_owner = models.BooleanField(
+        default=False,
+        help_text=(
+            "They hold the absolute highest level of permissions. "
+            "In addition to having all the same administrative capabilities as a regular Workspace Owner, "
+            "only the Primary Owner can delete the workspace or transfer primary ownership to another member. "
+            "There can only be one Workspace Primary Owner per workspace."
+        )
+    )
     workspace_owner = models.BooleanField(default=False)
 
     class Meta:

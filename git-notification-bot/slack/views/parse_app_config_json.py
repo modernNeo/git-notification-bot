@@ -27,6 +27,8 @@ def parse_app_config_json(slack_team_obj: SlackInstallation, user_id: str):
                 print(block)
             elif element.get('action_id') == 'atlassian_subnet_input':
                 element['initial_value'] = slack_team_obj.atlassian_subnet
+            elif element.get('action_id') == 'jira_token_input':
+                element['initial_value'] = slack_team_obj.jira_api_token
 
     else:
         app_config = json.load(open('slack/views/non_privileged_app_config.json', 'r', encoding='utf-8'))

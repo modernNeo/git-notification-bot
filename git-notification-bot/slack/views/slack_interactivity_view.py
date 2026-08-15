@@ -1,3 +1,4 @@
+import base64
 import json
 
 import requests
@@ -9,7 +10,112 @@ from django.views.decorators.csrf import csrf_exempt
 from core.log_request_data import log_request_data
 from slack.models import SlackInstallation, BotWorkspaceAdmin
 from slack.views.bot_workspace_admin_queries import attempt_slack_query_for_workspace_owners, get_custom_bot_admins
+from slack.views.lookup_email_by_id import lookup_email_by_id
 from slack.views.slack_event_subscriptions import SlackEventSubscriptions
+
+
+def _parse_bot_admins(payload, slack_team_obj: SlackInstallation):
+    current_admins_user_ids = list(get_custom_bot_admins(slack_team_obj))
+    workspace_owner_ids = attempt_slack_query_for_workspace_owners(slack_team_obj)
+
+    # filtering out the workspace owners since they are already bot admins
+    selected_workspace_owner_ids = [
+        selected_workspace_owner_id
+        for selected_workspace_owner_id in _get_selected_workspace_owner_ids(payload)
+        if selected_workspace_owner_id not in workspace_owner_ids
+    ]
+
+    ids_for_workspace_owners_to_delete = [
+        current_admin_user_id
+        for current_admin_user_id in current_admins_user_ids
+        if current_admin_user_id not in selected_workspace_owner_ids
+    ]
+
+    ids_for_workspace_owners_to_create = [
+        user_id for user_id in selected_workspace_owner_ids
+        if user_id not in current_admins_user_ids
+    ]
+
+    workspace_owners_to_create = [
+        BotWorkspaceAdmin(user_id=id_for_workspace_owners_to_create, workspace=slack_team_obj)
+        for id_for_workspace_owners_to_create in ids_for_workspace_owners_to_create
+    ]
+
+    if len(workspace_owners_to_create) > 0:
+        message = " ".join([f"saved {admin}\n" for admin in workspace_owners_to_create])
+        print(f"{message}")
+        BotWorkspaceAdmin.objects.bulk_create(workspace_owners_to_create, ignore_conflicts=True)
+    deleted_admins = BotWorkspaceAdmin.objects.filter(user_id__in=ids_for_workspace_owners_to_delete)
+    if len(deleted_admins) > 0:
+        message = " ".join([f"deleted {admin}\n" for admin in deleted_admins])
+        print(f"{message}")
+        deleted_admins.delete()
+
+
+def _get_selected_workspace_owner_ids(payload):
+    view = payload.get("view", {})
+    state = view.get("state", {})
+    values = state.get("values", {})
+    git_notification_bot_admins_block = values.get("git_notification_bot_admins_block", {})
+    git_notification_bot_admin_input = git_notification_bot_admins_block.get(
+        "git_notification_bot_admin_input", {})
+    return git_notification_bot_admin_input.get("selected_users", [])
+
+
+def _parse_atlassian_subnet(payload, slack_team_obj: SlackInstallation):
+    selected_atlassian_subnet, selected_atlassian_cloud_id = _get_selected_atlassian_subnet(
+        payload, slack_team_obj
+    )
+    if slack_team_obj.atlassian_subnet != selected_atlassian_subnet:
+        slack_team_obj.atlassian_subnet = selected_atlassian_subnet
+        slack_team_obj.atlassian_cloud_id = selected_atlassian_cloud_id
+
+
+def _get_selected_atlassian_subnet(payload, slack_team_obj: SlackInstallation):
+    view = payload.get("view", {})
+    state = view.get("state", {})
+    values = state.get("values", {})
+    atlassian_subnet_block = values.get("atlassian_subnet_block", {})
+    atlassian_subnet_input = atlassian_subnet_block.get("atlassian_subnet_input", {})
+    selected_atlassian_subnet = atlassian_subnet_input.get("value", "")
+    if selected_atlassian_subnet is None:
+        selected_atlassian_subnet = ""
+    selected_atlassian_cloud_id = None
+    if len(selected_atlassian_subnet) > 0:
+        tenant_url = f"https://{selected_atlassian_subnet}.atlassian.net/_edge/tenant_info"
+        response = requests.get(tenant_url)
+        if response.status_code == 200:
+            selected_atlassian_cloud_id = response.json()['cloudId']
+        else:
+            # invalid subnet so just revert to what was previously set
+            return slack_team_obj.atlassian_subnet, slack_team_obj.atlassian_cloud_id
+    return selected_atlassian_subnet, selected_atlassian_cloud_id
+
+
+def _parse_jira_token(payload, slack_team_obj: SlackInstallation):
+    if slack_team_obj.atlassian_cloud_id is None:
+        slack_team_obj.jira_api_token = None
+        return
+    view = payload.get("view", {})
+    state = view.get("state", {})
+    values = state.get("values", {})
+    jira_token_block = values.get("jira_token_block", {})
+    jira_token_input = jira_token_block.get("jira_token_input", {})
+    selected_jira_token = jira_token_input.get("value", "")
+    if selected_jira_token is None:
+        slack_team_obj.jira_api_token = None
+        return
+
+    user = payload.get("user", {})
+    user_id = user.get("id", None)
+    url = f"https://api.atlassian.com/ex/jira/{slack_team_obj.atlassian_cloud_id}/rest/api/3/myself"
+    email = lookup_email_by_id(slack_team_obj.bot_token, user_id)
+    if email:
+        creds = f"{email}:{selected_jira_token}"
+        encoded_creds = base64.b64encode(creds.encode("utf-8")).decode("utf-8")
+        response = requests.get(url, headers={"Authorization": f"Basic {encoded_creds}"})
+        if response.status_code == 200:
+            slack_team_obj.jira_api_token = selected_jira_token
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -58,81 +164,17 @@ class SlackInteractivityView(View):
         if not actions:
             return HttpResponse(status=200)
 
-        if action_id == 'app_home_submit_settings':
-            selected_users = self._get_selected_users(payload)
-            workspace_owners = attempt_slack_query_for_workspace_owners(slack_team_obj)
-            selected_users = [
-                selected_user
-                for selected_user in selected_users
-                if selected_user not in workspace_owners
-            ]
+        if action_id == 'app_home_submit_settings' or action_id == 'jira_tag_extraction_source_input':
+            _parse_bot_admins(payload, slack_team_obj)
+            _parse_atlassian_subnet(payload, slack_team_obj)
+            _parse_jira_token(payload, slack_team_obj)
 
-            current_admins_user_ids = list(get_custom_bot_admins(slack_team_obj))
-
-            new_users_ids = [
-                user_id for user_id in selected_users
-                if user_id not in current_admins_user_ids
-            ]
-            new_admins = [
-                BotWorkspaceAdmin(user_id=selected_users_id, workspace=slack_team_obj)
-                for selected_users_id in new_users_ids
-            ]
-
-            users_to_delete = [
-                current_admin
-                for current_admin in current_admins_user_ids
-                if current_admin not in selected_users
-            ]
-
-            if len(new_admins) > 0:
-                message = " ".join([f"saved {admin}\n" for admin in new_admins])
-                print(f"{message}")
-                BotWorkspaceAdmin.objects.bulk_create(new_admins, ignore_conflicts=True)
-            deleted_admins = BotWorkspaceAdmin.objects.filter(user_id__in=users_to_delete)
-            if len(deleted_admins) > 0:
-                message = " ".join([f"deleted {admin}\n" for admin in deleted_admins])
-                print(f"{message}")
-                deleted_admins.delete()
-
-            (
-                slack_team_obj.atlassian_subnet,
-                slack_team_obj.atlassian_cloud_id
-            ) = self._get_selected_atlassian_subnet(payload)
-            print(slack_team_obj.atlassian_subnet)
-            print(slack_team_obj.atlassian_cloud_id)
             slack_team_obj.save()
             SlackEventSubscriptions.publish_app_home(user_id, slack_team_obj)
         else:
-            return HttpResponse("unsupported action_id", status=400)
+            return HttpResponse(f"unsupported action_id {action_id}", status=400)
 
         return HttpResponse(status=200)
-
-    def _get_selected_users(self, payload):
-        view = payload.get("view", {})
-        state = view.get("state", {})
-        values = state.get("values", {})
-        git_notification_bot_admins_block = values.get("git_notification_bot_admins_block", {})
-        git_notification_bot_admin_input = git_notification_bot_admins_block.get(
-            "git_notification_bot_admin_input", {})
-        return git_notification_bot_admin_input.get("selected_users", [])
-
-    def _get_selected_atlassian_subnet(self, payload):
-        view = payload.get("view", {})
-        state = view.get("state", {})
-        values = state.get("values", {})
-        atlassian_subnet_block = values.get("atlassian_subnet_block", {})
-        atlassian_subnet_input = atlassian_subnet_block.get("atlassian_subnet_input", {})
-        selected_atlassian_subnet = atlassian_subnet_input.get("value", "")
-        selected_atlassian_cloud_id = None
-        if len(selected_atlassian_subnet) > 0:
-            tenant_url = f"https://{selected_atlassian_subnet}.atlassian.net/_edge/tenant_info"
-            response = requests.get(tenant_url)
-            if response.status_code == 200:
-                selected_atlassian_cloud_id = response.json()['cloudId']
-            else:
-                selected_atlassian_subnet = ""
-                selected_atlassian_cloud_id = None
-        return selected_atlassian_subnet, selected_atlassian_cloud_id
 
     def _handle_view_submission(self, payload):
         """Fires when the user clicks 'Save' on the interactive modal"""
