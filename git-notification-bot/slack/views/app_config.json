@@ -4,159 +4,233 @@
         "text": "Settings"
     },
     "blocks": [
-        {
-            "type": "header",
-            "text": {
-                "type": "plain_text",
-                "text": "Bot Configurations",
-                "emoji": true
-            },
-            "level": 1
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "input",
-            "block_id": "git_notification_bot_admins_block",
-            "element": {
-                "type": "multi_users_select",
-                "placeholder": {
-                    "type": "plain_text",
-                    "text": "Select custom bot admins",
-                    "emoji": true
-                },
-                "action_id": "git_notification_bot_admin_input"
-            },
-            "label": {
-                "type": "plain_text",
-                "text": "Bot Admins\nIn addition to workspace admins: ",
-                "emoji": true
-            },
-            "optional": false
-        },
-        {
-            "type": "input",
-            "block_id": "atlassian_subnet_block",
-            "element": {
-                "type": "plain_text_input",
-                "action_id": "atlassian_subnet_input"
-            },
-            "label": {
-                "type": "plain_text",
-                "text": "Atlassian Subnet",
-                "emoji": true
-            },
-            "optional": true
-        },
-        {
-            "type": "input",
-            "block_id": "jira_token_block",
-            "element": {
-                "type": "plain_text_input",
-                "action_id": "jira_token_input"
-            },
-            "label": {
-                "type": "plain_text",
-                "text": "Jira API Token",
-                "emoji": true
-            },
-            "optional": true
-        },
-        {
-            "type": "section",
-            "block_id": "jira_tag_extraction_source_block",
-            "text": {
-                "type": "mrkdwn",
-                "text": "*Jira Tag Extraction Source*"
-            },
-            "accessory": {
-                "action_id" : "jira_tag_extraction_source_input",
-                "type": "static_select",
-                "placeholder": {
-                    "type": "plain_text",
-                    "text": "Select Pull Request Tag Source",
-                    "emoji": true
-                },
-                "options": [
-                    {
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Branch Name",
-                            "emoji": true
-                        },
-                        "value": "Branch Name"
-                    },
-                    {
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Pull Request Title",
-                            "emoji": true
-                        },
-                        "value": "Pull Request Title"
-                    },
-                    {
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Pull Request Description",
-                            "emoji": true
-                        },
-                        "value": "Pull Request Description"
-                    }
-                ]
-            }
-        },
-        {
-            "type": "input",
-            "block_id": "jira_pattern_block",
-            "element": {
-                "type": "plain_text_input",
-                "action_id": "jira_pattern_input"
-            },
-            "label": {
-                "type": "plain_text",
-                "text": "Jira Tag Pattern Matcher",
-                "emoji": true
-            },
-            "optional": true
-        },
-        {
-            "type": "input",
-            "block_id": "bitbucket_secret_block",
-            "element": {
-                "type": "plain_text_input",
-                "action_id": "bitbucket_secret_input"
-            },
-            "label": {
-                "type": "plain_text",
-                "text": "Bitbucket Secret",
-                "emoji": true
-            },
-            "optional": true
-        },
-        {
-            "type": "actions",
-            "block_id": "config_footer_buttons",
-            "elements": [
-                {
-                    "type": "button",
-                    "action_id": "app_home_submit_settings",
-                    "text": {
-                        "type": "plain_text",
-                        "text": "Save Changes"
-                    },
-                    "style": "primary"
-                },
-                {
-                    "type": "button",
-                    "action_id": "app_home_cancel_settings",
-                    "text": {
-                        "type": "plain_text",
-                        "text": "Reset Form"
-                    },
-                    "style": "danger"
-                }
-            ]
-        }
-    ]
+		{
+			"type": "header",
+			"text": {
+				"type": "plain_text",
+				"text": "Bot Configurations",
+				"emoji": true
+			},
+			"level": 1
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "input",
+			"block_id": "git_notification_bot_admins_block",
+			"element": {
+				"type": "multi_users_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select custom bot admins",
+					"emoji": true
+				},
+				"action_id": "git_notification_bot_admin_input"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Bot Admins\nIn addition to workspace admins: ",
+				"emoji": true
+			},
+			"optional": false
+		},
+		{
+			"type": "input",
+			"block_id": "atlassian_subnet_block",
+			"element": {
+				"type": "plain_text_input",
+				"action_id": "atlassian_subnet_input"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Atlassian Subnet",
+				"emoji": true
+			},
+			"optional": true
+		},
+		{
+			"type": "container",
+			"block_id": "bkb_container_data_entry",
+			"title": {
+				"type": "plain_text",
+				"text": "JIRA API"
+			},
+			"subtitle": {
+				"type": "plain_text",
+				"text": "Fill in all required fields"
+			},
+			"child_blocks": [
+				{
+					"type": "input",
+					"block_id": "jira-username",
+					"label": {
+						"type": "plain_text",
+						"text": "Username",
+						"emoji": true
+					},
+					"element": {
+						"type": "plain_text_input",
+						"action_id": "title_input",
+						"placeholder": {
+							"type": "plain_text",
+							"text": "username associated with API token"
+						}
+					}
+				},
+				{
+					"type": "input",
+					"block_id": "jira-api-token",
+					"label": {
+						"type": "plain_text",
+						"text": "API Token",
+						"emoji": true
+					},
+					"element": {
+						"type": "plain_text_input",
+						"action_id": "title_input"
+					}
+				},
+				{
+					"type": "divider"
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "mrkdwn",
+						"text": "*Or select another user who will enter their API token*"
+					}
+				},
+				{
+					"type": "input",
+					"block_id": "form-priority",
+					"label": {
+						"type": "plain_text",
+						"text": "User",
+						"emoji": true
+					},
+					"element": {
+						"type": "users_select",
+						"placeholder": {
+							"type": "plain_text",
+							"text": "Select custom bot admins",
+							"emoji": true
+						},
+						"action_id": "git_notification_bot_admin_input"
+					}
+				},
+				{
+					"type": "actions",
+					"block_id": "form-actions",
+					"elements": [
+						{
+							"type": "button",
+							"text": {
+								"type": "plain_text",
+								"text": "Submit",
+								"emoji": true
+							},
+							"style": "primary",
+							"action_id": "form_submit"
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "section",
+			"block_id": "jira_tag_extraction_source_block",
+			"text": {
+				"type": "mrkdwn",
+				"text": "*Jira Tag Extraction Source*"
+			},
+			"accessory": {
+				"action_id": "jira_tag_extraction_source_input",
+				"type": "static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select Pull Request Tag Source",
+					"emoji": true
+				},
+				"options": [
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Branch Name",
+							"emoji": true
+						},
+						"value": "Branch Name"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Pull Request Title",
+							"emoji": true
+						},
+						"value": "Pull Request Title"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Pull Request Description",
+							"emoji": true
+						},
+						"value": "Pull Request Description"
+					}
+				]
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "jira_pattern_block",
+			"element": {
+				"type": "plain_text_input",
+				"action_id": "jira_pattern_input"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Jira Tag Pattern Matcher",
+				"emoji": true
+			},
+			"optional": true
+		},
+		{
+			"type": "input",
+			"block_id": "bitbucket_secret_block",
+			"element": {
+				"type": "plain_text_input",
+				"action_id": "bitbucket_secret_input"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Bitbucket Secret",
+				"emoji": true
+			},
+			"optional": true
+		},
+		{
+			"type": "actions",
+			"block_id": "config_footer_buttons",
+			"elements": [
+				{
+					"type": "button",
+					"action_id": "app_home_submit_settings",
+					"text": {
+						"type": "plain_text",
+						"text": "Save Changes"
+					},
+					"style": "primary"
+				},
+				{
+					"type": "button",
+					"action_id": "app_home_cancel_settings",
+					"text": {
+						"type": "plain_text",
+						"text": "Reset Form"
+					},
+					"style": "danger"
+				}
+			]
+		}
+	]
 }
