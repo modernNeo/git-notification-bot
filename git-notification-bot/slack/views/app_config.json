@@ -51,7 +51,7 @@
 		},
 		{
 			"type": "container",
-			"block_id": "bkb_container_data_entry",
+			"block_id": "jira_api_token_data_entry_block",
 			"title": {
 				"type": "plain_text",
 				"text": "JIRA API"
@@ -63,7 +63,7 @@
 			"child_blocks": [
 				{
 					"type": "input",
-					"block_id": "jira-username",
+					"block_id": "jira_api_token_username_block",
 					"label": {
 						"type": "plain_text",
 						"text": "Username",
@@ -71,7 +71,7 @@
 					},
 					"element": {
 						"type": "plain_text_input",
-						"action_id": "title_input",
+						"action_id": "jira_api_token_username_input",
 						"placeholder": {
 							"type": "plain_text",
 							"text": "username associated with API token"
@@ -80,7 +80,7 @@
 				},
 				{
 					"type": "input",
-					"block_id": "jira-api-token",
+					"block_id": "jira_api_token_entry_block",
 					"label": {
 						"type": "plain_text",
 						"text": "API Token",
@@ -88,7 +88,7 @@
 					},
 					"element": {
 						"type": "plain_text_input",
-						"action_id": "title_input"
+						"action_id": "jira_api_token_input"
 					}
 				},
 				{
@@ -103,7 +103,7 @@
 				},
 				{
 					"type": "input",
-					"block_id": "form-priority",
+					"block_id": "jira_api_token_alternate_user_block",
 					"label": {
 						"type": "plain_text",
 						"text": "User",
@@ -118,22 +118,6 @@
 						},
 						"action_id": "git_notification_bot_admin_input"
 					}
-				},
-				{
-					"type": "actions",
-					"block_id": "form-actions",
-					"elements": [
-						{
-							"type": "button",
-							"text": {
-								"type": "plain_text",
-								"text": "Submit",
-								"emoji": true
-							},
-							"style": "primary",
-							"action_id": "form_submit"
-						}
-					]
 				}
 			]
 		},
