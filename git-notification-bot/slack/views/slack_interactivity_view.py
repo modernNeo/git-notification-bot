@@ -235,8 +235,8 @@ class SlackInteractivityView(View):
             response = _update_jira_api_token_information(payload, slack_team_obj)
             if not response.status:
                 messages_to_send = MessagesToSend(
-                    [create_ephemeral_message_for_app_home_error_message(response.error_message),
-                     HttpResponse(status=200)]
+                    [create_ephemeral_message_for_app_home_error_message(user_id, response.error_message)],
+                    HttpResponse(status=200)
                 )
                 send_ephemeral_messages(messages_to_send, slack_team_obj)
                 return messages_to_send.api_response
