@@ -125,12 +125,9 @@ def _update_jira_api_token_information(payload, slack_team_obj: SlackInstallatio
     view = payload.get("view", {})
     state = view.get("state", {})
     values = state.get("values", {})
+    user = payload.get("user", {})
 
-    username_val = (
-        values.get("jira_api_token_username_block", {})
-        .get("jira_api_token_username_input", {})
-        .get("value")
-    )
+    user_id = user.get("id", None)
 
     token_val = (
         values.get("jira_api_token_entry_block", {})
@@ -144,37 +141,21 @@ def _update_jira_api_token_information(payload, slack_team_obj: SlackInstallatio
         .get("selected_user")
     )
 
-    # Rule 1: Username provided, but missing token -> Error
-    if username_val and not token_val:
-        return
-
-    # Rule 2: Token provided, but missing username -> Error
-    if token_val and not username_val:
-        return
-
     # Rule 3: Both username and token provided
     from atlassian.views.get_ticket_title import token_is_valid
-    if username_val and token_val:
-        # If an alternate user is also selected when both are provided -> Error
-        if selected_user_id:
-            return
+    if selected_user_id and token_val:
+        # If an alternate user is selected when a token is present -> Error
+        return
+    elif selected_user_id:
+        slack_team_obj.jira_api_token = None
+        slack_team_obj.jira_api_token_user_id = selected_user_id
+    elif token_val:
         prev_value = slack_team_obj.jira_api_token
         slack_team_obj.jira_api_token = token_val
-        if not token_is_valid(slack_team_obj):
+        if token_is_valid(slack_team_obj):
+            slack_team_obj.jira_api_token_user_id = user_id
+        else:
             slack_team_obj.jira_api_token = prev_value
-        else:
-            slack_team_obj.jira_api_token_alternate_user_id = None
-
-    # Rule 4: Neither username nor token provided
-    elif not username_val and not token_val:
-        # If an alternate user is selected, save the alternate user
-        if selected_user_id:
-            slack_team_obj.jira_api_token = None
-            slack_team_obj.jira_api_username = None
-            slack_team_obj.jira_api_token_alternate_user_id = selected_user_id
-        else:
-            # Nothing to save, carry on
-            pass
 
 
 @method_decorator(csrf_exempt, name='dispatch')

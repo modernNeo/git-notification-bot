@@ -63,23 +63,6 @@
 			"child_blocks": [
 				{
 					"type": "input",
-					"block_id": "jira_api_token_username_block",
-					"label": {
-						"type": "plain_text",
-						"text": "Username",
-						"emoji": true
-					},
-					"element": {
-						"type": "plain_text_input",
-						"action_id": "jira_api_token_username_input",
-						"placeholder": {
-							"type": "plain_text",
-							"text": "username associated with API token"
-						}
-					}
-				},
-				{
-					"type": "input",
 					"block_id": "jira_api_token_entry_block",
 					"label": {
 						"type": "plain_text",
