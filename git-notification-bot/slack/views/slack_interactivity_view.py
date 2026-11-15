@@ -7,10 +7,14 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from bitbucket_webhook.views.messages_to_send import MessagesToSend
 from core.log_request_data import log_request_data
+from endtoendtests.tests.send_messages import send_ephemeral_messages
 from slack.models import SlackInstallation, BotWorkspaceAdmin
 from slack.views.bot_workspace_admin_queries import attempt_slack_query_for_workspace_owners, get_custom_bot_admins
 from slack.views.lookup_email_by_id import lookup_email_by_id
+from slack.views.message_creation.create_ephemeral_message_for_app_home_error_message import \
+    create_ephemeral_message_for_app_home_error_message
 from slack.views.slack_event_subscriptions import SlackEventSubscriptions
 
 
@@ -230,15 +234,15 @@ class SlackInteractivityView(View):
             _parse_jira_token(payload, slack_team_obj)
             response = _update_jira_api_token_information(payload, slack_team_obj)
             if not response.status:
-                return JsonResponse({
-                    "response_action": "errors",
-                    "errors": {
-                        "jira_api_token_data_entry_block": response.error_message
-                    }
-                })
-
-            slack_team_obj.save()
-            SlackEventSubscriptions.publish_app_home(user_id, slack_team_obj)
+                messages_to_send = MessagesToSend(
+                    [create_ephemeral_message_for_app_home_error_message(response.error_message),
+                     HttpResponse(status=200)]
+                )
+                send_ephemeral_messages(messages_to_send, slack_team_obj)
+                return messages_to_send.api_response
+            else:
+                slack_team_obj.save()
+                SlackEventSubscriptions.publish_app_home(user_id, slack_team_obj)
         else:
             return HttpResponse(f"unsupported action_id {action_id}", status=400)
 
