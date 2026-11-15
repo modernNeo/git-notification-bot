@@ -14,7 +14,7 @@ from slack.views.bot_workspace_admin_queries import attempt_slack_query_for_work
 from slack.views.lookup_email_by_id import lookup_email_by_id
 from slack.views.message_creation.create_ephemeral_message_for_app_home_error_message import \
     create_ephemeral_message_for_app_home_error_message
-from slack.views.send_messages import send_ephemeral_messages
+from slack.views.send_messages import send_messages
 from slack.views.slack_event_subscriptions import SlackEventSubscriptions
 
 
@@ -238,7 +238,7 @@ class SlackInteractivityView(View):
                     [create_ephemeral_message_for_app_home_error_message(user_id, response.error_message)],
                     HttpResponse(status=200)
                 )
-                send_ephemeral_messages(messages_to_send, slack_team_obj)
+                send_messages(messages_to_send, slack_team_obj)
                 return messages_to_send.api_response
             else:
                 slack_team_obj.save()

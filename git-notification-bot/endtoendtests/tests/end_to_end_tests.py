@@ -67,7 +67,7 @@ class EndtoEndTests(TestCase):
                 "Unexpected block structure"
             )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_draft_pr_published_with_no_request_reviewers(self):
         pr_published_with_no_reviewers = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_4.json")
@@ -110,7 +110,7 @@ class EndtoEndTests(TestCase):
                 "Unexpected block structure"
             )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_pr_create_and_published_at_same_time_with_request_reviewers(self):
         pr_published_with_no_reviewers = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_2.json")
@@ -152,7 +152,7 @@ class EndtoEndTests(TestCase):
                 "Unexpected block structure"
             )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_draft_pr_published_with_request_reviewers(self):
         pr_published_with_no_reviewers = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_5.json")
@@ -195,7 +195,7 @@ class EndtoEndTests(TestCase):
                 "Unexpected block structure"
             )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_pr_created_in_draft_mode(self):
         pr_published_with_no_reviewers = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_3.json")
@@ -303,7 +303,7 @@ class EndtoEndTests(TestCase):
                     "Unexpected block structure"
                 )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_reply_inline_comment_made_on_existing_thread(self):
         pr_published_with_no_reviewers = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_10.json")
@@ -400,7 +400,7 @@ class EndtoEndTests(TestCase):
                     "Unexpected block structure"
                 )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_overview_comment_made_on_new_thread(self):
         pr_published_with_no_reviewers = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_15.json")
@@ -497,7 +497,7 @@ class EndtoEndTests(TestCase):
                     "Unexpected block structure"
                 )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_overview_comment_made_on_existing_thread(self):
         pr_published_with_no_reviewers = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_18.json")
@@ -594,7 +594,7 @@ class EndtoEndTests(TestCase):
                     "Unexpected block structure"
                 )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_changed_requested_on_pr(self):
         pr_approved = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_23.json")
@@ -637,7 +637,7 @@ class EndtoEndTests(TestCase):
                 "Unexpected block structure"
             )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_approval_on_pr(self):
         pr_approved = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_24.json")
@@ -681,7 +681,7 @@ class EndtoEndTests(TestCase):
                 "Unexpected block structure"
             )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_build_passed_on_pr(self):
         pr_approved = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_26.json")
@@ -724,7 +724,7 @@ class EndtoEndTests(TestCase):
                 "Unexpected block structure"
             )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)
 
     def test_build_failed_on_pr(self):
         pr_approved = BitbucketRequest("endtoendtests/tests/bitbucket_payloads/case_28.json")
@@ -767,4 +767,4 @@ class EndtoEndTests(TestCase):
                 "Unexpected block structure"
             )
         if SEND_SLACK_MESSAGES:
-            send_messages(messages_to_send)
+            send_messages(messages_to_send, slack_installation)

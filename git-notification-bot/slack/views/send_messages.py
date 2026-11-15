@@ -1,16 +1,15 @@
 import json
 
 import requests
-from django.conf import settings
 
 from bitbucket_webhook.views.messages_to_send import MessagesToSend
 from slack.models import SlackInstallation
 
 
-def send_messages(messages_to_send: MessagesToSend):
+def send_messages(messages_to_send: MessagesToSend, slack_team_obj: SlackInstallation):
     headers = {
         'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': f"Bearer {settings.SLACK_BOT_USER_OAUTH_TOKEN}"
+        'Authorization': f"Bearer {slack_team_obj.bot_token}"
     }
     for message_to_send in messages_to_send.messages_to_send:
         resp = requests.post(
