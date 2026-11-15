@@ -12,7 +12,7 @@ def create_ephemeral_message_for_app_home_error_message(user_id, error_message: 
             "text": {
                 "type": "mrkdwn",
                 "text": f"Hi <@{user_id}>,\n\n"
-                        f'<{error_message}'
+                        f'{error_message}'
             },
             "accessory": {
                 "type": "button",

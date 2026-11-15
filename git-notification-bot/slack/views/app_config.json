@@ -96,7 +96,7 @@
 						"type": "users_select",
 						"placeholder": {
 							"type": "plain_text",
-							"text": "Select custom bot admins",
+							"text": "Specify user who will enter JIRA API token.",
 							"emoji": true
 						},
 						"action_id": "git_notification_bot_admin_input"
