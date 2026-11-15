@@ -119,23 +119,23 @@ def _parse_jira_token(payload, slack_team_obj: SlackInstallation):
 
 
 class JiraAPITokenResponse:
-    def __init__(self, status: bool, http_response=None):
+    def __init__(self, status: bool, error_message=None):
         self.status = status
-        self.http_response = http_response
+        self.error_message = error_message
 
     @classmethod
     def with_true_status(cls):
-        return cls(status=True, http_response=None)
+        return cls(status=True, error_message=None)
 
     @classmethod
-    def from_response(cls, http_response):
-        return cls(status=False, http_response=http_response)
+    def from_error_message(cls, error_message):
+        return cls(status=False, error_message=error_message)
 
 
 def _update_jira_api_token_information(payload, slack_team_obj: SlackInstallation) -> JiraAPITokenResponse:
     if slack_team_obj.atlassian_cloud_id is None:
         slack_team_obj.jira_api_token = None
-        return JiraAPITokenResponse.from_response(HttpResponse("No Atlassian Cloud-Id detected", status=400))
+        return JiraAPITokenResponse.from_error_message("No Atlassian Cloud-Id detected")
     view = payload.get("view", {})
     state = view.get("state", {})
     values = state.get("values", {})
@@ -159,8 +159,8 @@ def _update_jira_api_token_information(payload, slack_team_obj: SlackInstallatio
     from atlassian.views.get_ticket_title import token_is_valid
     if selected_user_id and token_val:
         # If an alternate user is selected when a token is present -> Error
-        return JiraAPITokenResponse.from_response(
-            HttpResponse("Cannot set token and alternate user for JIRA API token", status=400))
+        return JiraAPITokenResponse.from_error_message(
+            "Cannot set token and alternate user for JIRA API token")
     elif selected_user_id:
         slack_team_obj.jira_api_token = None
         slack_team_obj.jira_api_token_user_id = selected_user_id
@@ -173,9 +173,9 @@ def _update_jira_api_token_information(payload, slack_team_obj: SlackInstallatio
             return JiraAPITokenResponse.with_true_status()
         else:
             slack_team_obj.jira_api_token = prev_value
-            return JiraAPITokenResponse.from_response(HttpResponse("Invalid JIRA API token", status=400))
+            return JiraAPITokenResponse.from_error_message("Invalid JIRA API token")
     else:
-        return JiraAPITokenResponse.from_response(HttpResponse("Unexpected Error", status=400))
+        return JiraAPITokenResponse.from_error_message("Unexpected Error")
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -230,7 +230,12 @@ class SlackInteractivityView(View):
             _parse_jira_token(payload, slack_team_obj)
             response = _update_jira_api_token_information(payload, slack_team_obj)
             if not response.status:
-                return response.http_response
+                return JsonResponse({
+                    "response_action": "errors",
+                    "errors": {
+                        "config_field_one": response.error_message
+                    }
+                })
 
             slack_team_obj.save()
             SlackEventSubscriptions.publish_app_home(user_id, slack_team_obj)
