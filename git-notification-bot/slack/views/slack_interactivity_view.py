@@ -118,6 +118,65 @@ def _parse_jira_token(payload, slack_team_obj: SlackInstallation):
             slack_team_obj.jira_api_token = selected_jira_token
 
 
+def _update_jira_api_token_information(payload, slack_team_obj: SlackInstallation):
+    if slack_team_obj.atlassian_cloud_id is None:
+        slack_team_obj.jira_api_token = None
+        return
+    view = payload.get("view", {})
+    state = view.get("state", {})
+    values = state.get("values", {})
+
+    username_val = (
+        values.get("jira_api_token_username_block", {})
+        .get("jira_api_token_username_input", {})
+        .get("value")
+    )
+
+    token_val = (
+        values.get("jira_api_token_entry_block", {})
+        .get("jira_api_token_input", {})
+        .get("value")
+    )
+
+    selected_user_id = (
+        values.get("jira_api_token_alternate_user_block", {})
+        .get("git_notification_bot_admin_input", {})
+        .get("selected_user")
+    )
+
+    # Rule 1: Username provided, but missing token -> Error
+    if username_val and not token_val:
+        return
+
+    # Rule 2: Token provided, but missing username -> Error
+    if token_val and not username_val:
+        return
+
+    # Rule 3: Both username and token provided
+    from atlassian.views.get_ticket_title import token_is_valid
+    if username_val and token_val:
+        # If an alternate user is also selected when both are provided -> Error
+        if selected_user_id:
+            return
+        prev_value = slack_team_obj.jira_api_token
+        slack_team_obj.jira_api_token = token_val
+        if not token_is_valid(slack_team_obj):
+            slack_team_obj.jira_api_token = prev_value
+        else:
+            slack_team_obj.jira_api_token_alternate_user_id = None
+
+    # Rule 4: Neither username nor token provided
+    elif not username_val and not token_val:
+        # If an alternate user is selected, save the alternate user
+        if selected_user_id:
+            slack_team_obj.jira_api_token = None
+            slack_team_obj.jira_api_username = None
+            slack_team_obj.jira_api_token_alternate_user_id = selected_user_id
+        else:
+            # Nothing to save, carry on
+            pass
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class SlackInteractivityView(View):
 
@@ -168,6 +227,7 @@ class SlackInteractivityView(View):
             _parse_bot_admins(payload, slack_team_obj)
             _parse_atlassian_subnet(payload, slack_team_obj)
             _parse_jira_token(payload, slack_team_obj)
+            _update_jira_api_token_information(payload, slack_team_obj)
 
             slack_team_obj.save()
             SlackEventSubscriptions.publish_app_home(user_id, slack_team_obj)

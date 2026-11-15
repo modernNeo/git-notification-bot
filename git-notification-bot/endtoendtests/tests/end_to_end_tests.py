@@ -8,6 +8,7 @@ from atlassian.views.get_ticket_title import token_is_valid
 from bitbucket_webhook.views.payload_processor import payload_processor
 from endtoendtests.tests.BitbucketRequest import BitbucketRequest
 from endtoendtests.tests.send_messages import send_messages
+from slack.models import SlackInstallation
 
 # Create your tests here
 
@@ -19,7 +20,10 @@ class EndtoEndTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        if not token_is_valid("NGA-123"):
+        slack_installation = SlackInstallation()
+        slack_installation.atlassian_subnet = "asdf"
+
+        if not token_is_valid(slack_installation):
             pytest.skip("Token invalid: Skipping all EndtoEndTests")
 
     def test_pr_create_and_published_at_same_time_with_no_request_reviewers(self):

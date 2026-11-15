@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 
 class SlackInstallation(models.Model):
@@ -14,7 +15,38 @@ class SlackInstallation(models.Model):
 
     atlassian_subnet = models.CharField(max_length=255, blank=True, null=True)
     atlassian_cloud_id = models.CharField(max_length=255, blank=True, null=True)
+
+    jira_api_username = models.CharField(max_length=255, blank=True, null=True)
     jira_api_token = models.CharField(max_length=255, blank=True, null=True)
+    jira_api_token_alternate_user_id = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        constraints = [
+            # @formatter:off
+            models.CheckConstraint(
+                condition=(
+                    # State 1: All empty / null
+                    (Q(jira_api_username__isnull=True) | Q(jira_api_username='')) &
+                    (Q(jira_api_token__isnull=True) | Q(jira_api_token='')) &
+                    (Q(jira_api_token_alternate_user_id__isnull=True) | Q(jira_api_token_alternate_user_id=''))
+                ) | (
+                    # State 2: Username & Token filled, Alternate empty/null
+                    (~Q(jira_api_username__isnull=True) & ~Q(jira_api_username='')) &
+                    (~Q(jira_api_token__isnull=True) & ~Q(jira_api_token='')) &
+                    (Q(jira_api_token_alternate_user_id__isnull=True) | Q(jira_api_token_alternate_user_id=''))
+                ) | (
+                    # State 3: Alternate filled, Username & Token empty/null
+                    (Q(jira_api_username__isnull=True) | Q(jira_api_username='')) &
+                    (Q(jira_api_token__isnull=True) | Q(jira_api_token='')) &
+                    (~Q(jira_api_token_alternate_user_id__isnull=True) & ~Q(jira_api_token_alternate_user_id=''))
+                ),
+                name='jira_auth_mutual_exclusion_check',
+                violation_error_message=(
+                    "Invalid Jira credentials configuration. You must provide both username and token, or "
+                    "only the alternate user ID, but not both."),
+                violation_error_code="invalid_jira_auth_combination")
+            # @formatter:on
+        ]
 
     # jira_tag_extraction_source = models.CharField(max_length=255, blank=True, null=True)
     # # branch name
