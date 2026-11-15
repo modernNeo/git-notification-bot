@@ -233,7 +233,7 @@ class SlackInteractivityView(View):
                 return JsonResponse({
                     "response_action": "errors",
                     "errors": {
-                        "config_field_one": response.error_message
+                        "jira_api_token_data_entry_block": response.error_message
                     }
                 })
 
