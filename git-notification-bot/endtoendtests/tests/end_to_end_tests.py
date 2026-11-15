@@ -7,8 +7,8 @@ from django.test import TestCase
 from atlassian.views.get_ticket_title import token_is_valid
 from bitbucket_webhook.views.payload_processor import payload_processor
 from endtoendtests.tests.BitbucketRequest import BitbucketRequest
-from endtoendtests.tests.send_messages import send_messages
 from slack.models import SlackInstallation
+from slack.views.send_messages import send_messages
 
 # Create your tests here
 

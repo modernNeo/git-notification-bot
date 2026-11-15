@@ -9,12 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 
 from bitbucket_webhook.views.messages_to_send import MessagesToSend
 from core.log_request_data import log_request_data
-from endtoendtests.tests.send_messages import send_ephemeral_messages
 from slack.models import SlackInstallation, BotWorkspaceAdmin
 from slack.views.bot_workspace_admin_queries import attempt_slack_query_for_workspace_owners, get_custom_bot_admins
 from slack.views.lookup_email_by_id import lookup_email_by_id
 from slack.views.message_creation.create_ephemeral_message_for_app_home_error_message import \
     create_ephemeral_message_for_app_home_error_message
+from slack.views.send_messages import send_ephemeral_messages
 from slack.views.slack_event_subscriptions import SlackEventSubscriptions
 
 
